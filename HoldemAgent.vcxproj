@@ -65,19 +65,19 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>ExternalLibs/cuda/lib/x64;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\lib\x64;; /ExternalLibs/cuda/libs/;;/ExternalLibs/cuda/libs;</LibraryPath>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);ExternalLibs/cuda/include;TexasHoldem;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);ExternalLibs/cuda/include;TexasHoldem;MCTS;</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);ExternalLibs/cuda/include;TexasHoldem;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);ExternalLibs/cuda/include;TexasHoldem;MCTS;</IncludePath>
     <LibraryPath>ExternalLibs/cuda/lib/x64;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86); /ExternalLibs/cuda/libs/;;/ExternalLibs/cuda/libs;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);ExternalLibs/cuda/include;TexasHoldem;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);ExternalLibs/cuda/include;TexasHoldem;MCTS;</IncludePath>
     <LibraryPath>ExternalLibs/cuda/lib/x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64); /ExternalLibs/cuda/libs/;;/ExternalLibs/cuda/libs;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);ExternalLibs/cuda/include;TexasHoldem;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);ExternalLibs/cuda/include;TexasHoldem;MCTS;</IncludePath>
     <LibraryPath>ExternalLibs/cuda/lib/x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64); /ExternalLibs/cuda/libs/;;/ExternalLibs/cuda/libs;</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
