@@ -42,7 +42,7 @@ namespace game {
 
         PlayerState m_playerState;
 
-        Action getAction(GameState p_gameState, std::vector<Action> p_possibleActions);
+        Action getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions);
 
         void setCards(std::vector<Card> p_cards);
     };

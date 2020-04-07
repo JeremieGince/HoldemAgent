@@ -37,6 +37,7 @@ namespace game {
         int iteration;
         std::vector<Player> players;
         std::vector<Card> board;
+        int currentBet;
     };
 
     class TexasHoldemGame {
@@ -51,6 +52,7 @@ namespace game {
 
         // TODO
         void incrementBankForWinner();
+        void applyActionOnPlayer(Player p_player, Action p_action);
 
 
     public:
@@ -58,7 +60,7 @@ namespace game {
 
         static GameState getRandomNextState(GameState p_gameState);
         GameState getState();
-        std::vector<Action> getPossibleActions(PlayerState p_playerState, GameState p_gameState);
+        std::vector<ActionType> getPossibleActions(PlayerState p_playerState, GameState p_gameState);
 
         int getReward(std::vector<Card> p_hand);
 
@@ -67,6 +69,7 @@ namespace game {
         void reset();
 
         // TODO: implémenter
+        void updateCurrentGameState();
         void doRoundUntilEnd();
         void doHand();
 
