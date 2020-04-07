@@ -3,8 +3,11 @@
  * \brief card class definition
  * \author Samuel Ouellet (111 233 977)
  */
-
+#include <iostream>
 #include "Card.h"
+
+
+using namespace std;
 
  /**
   * \namespace game
@@ -70,6 +73,33 @@ namespace game {
     int Card::GetId() {
         return id;
     }
-    ;
+
+    string Card::assetAsString(Asset p_asset) {
+        string assetStr = "";
+        switch (p_asset)
+        {
+        case game::CLUBS:
+            assetStr = "Clubs";
+            break;
+        case game::HEART:
+            assetStr = "Heart";
+            break;
+        case game::SPADES:
+            assetStr = "Spades";
+            break;
+        case game::DIAMONDS:
+            assetStr = "Diamonds";
+            break;
+        default:
+            break;
+        }
+        return assetStr;
+    }
+    
+    const string& Card::asString() const {
+        string out = "";
+        out += to_string(m_number) + " of " + Card::assetAsString(m_asset);
+        return out;
+    }
 }
 

@@ -29,30 +29,29 @@ namespace game {
     */
     enum ActionType{CHECK=0, ALL_IN=1, RAISE=2, FLOD=3, FOLLOW=4 };
     struct Action {
-        ActionType actionType;
-        int bet;
+        ActionType actionType = CHECK;
+        int bet = 0;
     };
 
     struct GameState {
-        int iteration;
+        int iteration = 0;
         std::vector<Player> players;
         std::vector<Card> board;
-        int currentBet;
+        int currentBet = 0;
+        bool currentCheck = true;
     };
 
     class TexasHoldemGame {
 
     private:
-        int m_iteration;
-        int m_hmPlayer;
+        std::vector<GameState> m_states;
         std::vector<Player> m_players;
         GameState m_currentGameState;
         int m_startBank;
         CardStack m_cardStack;
 
-        // TODO
-        void incrementBankForWinner();
-        void applyActionOnPlayer(Player p_player, Action p_action);
+        void endHand();
+        void applyActionOnPlayer(Player& p_player, Action p_action);
 
 
     public:
@@ -65,13 +64,13 @@ namespace game {
         int getReward(std::vector<Card> p_hand);
 
         void start();
-        void doRound();
+        bool doRound();
         void reset();
 
-        // TODO: implémenter
         void updateCurrentGameState();
         void doRoundUntilEnd();
-        void doHand();
+        void doHand(bool p_verbose = true);
+        std::string getCurrentStateAsString();
 
     };
 }

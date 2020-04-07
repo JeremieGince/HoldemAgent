@@ -28,8 +28,10 @@ namespace game {
         const Asset& reqAsset() const;
         const int& reqNumber() const;
         void  verifyInvariant() const;
-
+        const std::string& asString() const;
         int GetId();
+
+        static std::string assetAsString(Asset p_asset);
 
         static int GetId(Asset p_asset, int p_number);
 

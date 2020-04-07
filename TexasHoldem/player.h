@@ -17,15 +17,17 @@ namespace game {
 
     struct GameState;
     struct Action;
+    enum ActionType;
 
     struct PlayerState {
-        bool dealer;
-        bool small_blind;
-        bool big_blind;
+        bool dealer = false;
+        bool small_blind = false;
+        bool big_blind = false;
 
-        int bet;
-        int bank;
-        bool active;
+        int bet = 0;
+        int raise = 0;
+        int bank = 0;
+        bool active = true;
     };
 
     class Player {
@@ -33,11 +35,11 @@ namespace game {
     private:
         std::string m_name;
         std::string m_method;
-
         std::vector<Card> m_cards;
         //GameState m_currentGameState;
 
     public:
+        Player();
         Player(std::string p_name, std::string p_method);
 
         PlayerState m_playerState;
@@ -45,6 +47,10 @@ namespace game {
         Action getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions);
 
         void setCards(std::vector<Card> p_cards);
+        std::vector<Card> getCards();
+
+        std::string getName();
+        std::string getMethod();
     };
 }
 #endif //POKER_MONTE_CARLO_PLAYER_H

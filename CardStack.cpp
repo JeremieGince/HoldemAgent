@@ -25,7 +25,7 @@ namespace game {
 		for (int assetInt = CLUBS; assetInt != DIAMONDS; assetInt++)
 		{
 			Asset asset = static_cast<Asset>(assetInt);
-			for (int i = i; i < 15; i++)
+			for (int i = 1; i < 15; i++)
 			{
 				cards.push_back(Card(asset, i));
 			}

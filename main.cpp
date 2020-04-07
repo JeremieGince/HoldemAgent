@@ -10,8 +10,11 @@
 
 // Project includes
 #include <Card.h>
+#include <player.h>
+#include <TexasHoldemGame.h>
 
 using namespace game;
+using namespace std;
 /*
 
 __global__ void add(int* a, int* b, int* c, int n) {
@@ -66,9 +69,16 @@ void main_test_cuda() {
 
 int main(void) {
 
-	Card c = Card(Asset(HEART), 3);
+	Player player_rn0 = Player("rn0", "random");
+	Player player_rn1 = Player("rn1", "random");
 
-	std::cout << std::to_string(c.GetId());
+	vector<Player> players{ player_rn0, player_rn1 };
+
+	TexasHoldemGame game = TexasHoldemGame(players, 10);
+
+	game.start();
+
+	game.doHand();
 
 	int f;
 	std::cin >> f;
