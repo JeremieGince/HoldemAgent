@@ -30,11 +30,11 @@ namespace game {
         //PRECONDITION(p_number < 14);
 
         id = Card::GetId(p_asset, p_number);
-        /*
+        
         POSTCONDITION(m_asset == p_asset);
         POSTCONDITION(m_number == p_number);
         POSTCONDITION(id == p_number * Asset(p_asset))
-        */
+        
     }
 
     /**
@@ -57,8 +57,8 @@ namespace game {
      * la théorie du contrat.
      */
     void Card::verifyInvariant() const {
-        //INVARIANT(0 < m_number);
-        //INVARIANT(m_number < 14);
+        INVARIANT(0 < m_number);
+        INVARIANT(m_number < 14);
     }
 
 

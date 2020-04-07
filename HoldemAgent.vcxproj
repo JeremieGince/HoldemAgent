@@ -127,15 +127,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CardStack.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="texasholdem\Card.cpp" />
     <ClCompile Include="TexasHoldem\contract_exception.cpp" />
     <ClCompile Include="TexasHoldem\player.cpp" />
+    <ClCompile Include="TexasHoldem\TexasHoldemGame.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="util.h" />
+    <ClInclude Include="MCTS\MCTS.h" />
     <ClInclude Include="texasholdem\Card.h" />
+    <ClInclude Include="TexasHoldem\CardStack.h" />
     <ClInclude Include="TexasHoldem\contract_exception.h" />
     <ClInclude Include="TexasHoldem\player.h" />
+    <ClInclude Include="TexasHoldem\TexasHoldemGame.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
