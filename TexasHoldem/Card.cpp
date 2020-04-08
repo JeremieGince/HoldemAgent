@@ -27,7 +27,7 @@ namespace game {
      *
      * \return A card object.
      */
-    Card::Card(Asset p_asset, int p_number) :
+    Card::Card(Asset p_asset, CardNumber p_number) :
         m_asset(p_asset), m_number(p_number) {
         //PRECONDITION(0 < p_number);
         //PRECONDITION(p_number < 14);
@@ -51,7 +51,7 @@ namespace game {
      * \brief Getter of the m_number attribute.
      * \return The number of the card.
      */
-    const int& Card::reqNumber() const {
+    const CardNumber& Card::reqNumber() const {
         return m_number;
     }
     /**
@@ -60,8 +60,8 @@ namespace game {
      * la théorie du contrat.
      */
     void Card::verifyInvariant() const {
-        INVARIANT(0 < m_number);
-        INVARIANT(m_number < 14);
+        INVARIANT(1 < m_number);
+        INVARIANT(m_number < 15);
     }
 
 
@@ -95,10 +95,60 @@ namespace game {
         }
         return assetStr;
     }
+
+    string Card::numberAsString(CardNumber p_number) {
+        string numberStr = "";
+
+        switch (p_number)
+        {
+        case game::TWO:
+            numberStr = "2";
+            break;
+        case game::TREE:
+            numberStr = "3";
+            break;
+        case game::FOUR:
+            numberStr = "4";
+            break;
+        case game::FIVE:
+            numberStr = "5";
+            break;
+        case game::SIX:
+            numberStr = "6";
+            break;
+        case game::SEVEN:
+            numberStr = "7";
+            break;
+        case game::EIGHT:
+            numberStr = "8";
+            break;
+        case game::NINE:
+            numberStr = "9";
+            break;
+        case game::TEN:
+            numberStr = "10";
+            break;
+        case game::JAC:
+            numberStr = "J";
+            break;
+        case game::QUEEN:
+            numberStr = "Q";
+            break;
+        case game::KING:
+            numberStr = "K";
+            break;
+        case game::ACE:
+            numberStr = "A";
+            break;
+        default:
+            break;
+        }
+        return numberStr;
+    }
     
     const string& Card::asString() const {
         string out = "";
-        out += to_string(m_number) + " of " + Card::assetAsString(m_asset);
+        out += Card::numberAsString(m_number) + " of " + Card::assetAsString(m_asset);
         return out;
     }
 }

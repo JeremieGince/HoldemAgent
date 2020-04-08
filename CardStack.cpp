@@ -25,9 +25,11 @@ namespace game {
 		for (int assetInt = CLUBS; assetInt != DIAMONDS; assetInt++)
 		{
 			Asset asset = static_cast<Asset>(assetInt);
-			for (int i = 1; i < 15; i++)
+			for (int i = Card::minNumber; i <= Card::maxNumber; i++)
 			{
-				cards.push_back(Card(asset, i));
+				CardNumber cNumber = static_cast<CardNumber>(i);
+
+				cards.push_back(Card(asset, cNumber));
 			}
 		}
 

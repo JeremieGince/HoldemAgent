@@ -169,6 +169,39 @@ namespace game {
 	}
 
 
+	bool TexasHoldemGame::checkRoyalFlush(std::vector<Card> p_hand) {
+		bool hasAce = false;
+		bool hasKing = false;
+		bool hasQueen = false;
+		bool hasJack = false;
+		bool hasTen = false;
+
+		for each (Card card in p_hand)
+		{
+			switch (card.reqNumber())
+			{
+			case ACE:
+				hasAce = true;
+				break;
+			case KING:
+				hasKing = true;
+				break;
+			case QUEEN:
+				hasQueen = true;
+				break;
+			case JACK:
+				hasJack = true;
+				break;
+			case TEN:
+				hasTen = true;
+				break;
+			default:
+				break;
+			}
+		}
+		return hasAce && hasKing && hasQueen && hasJack && hasTen;
+	}
+
 
 
 
@@ -182,6 +215,36 @@ namespace game {
 		{
 			reward += card.reqNumber();
 		}
+
+		if (checkRoyalFlush(playerHand)) {
+			reward += HandScoreOffset::ROYALFLUSH;
+		}
+		else if (checkStraightFlush(playerHand)) {
+			reward += HandScoreOffset::STRAIGHTFLUSH;
+		}
+		else if (checkFourOfAKind(playerHand)) {
+			reward += HandScoreOffset::FOUROFAKIND;
+		}
+		else if (checkFullHouse(playerHand)) {
+			reward += HandScoreOffset::FULLHOUSE;
+		}
+		else if (checkFlush(playerHand)) {
+			reward += HandScoreOffset::FLUSH;
+		}
+		else if (checkStraight(playerHand)) {
+			reward += HandScoreOffset::STRAIGHT;
+		}
+		else if (checkThreeOfAKind(playerHand)) {
+			reward += HandScoreOffset::THREEOFAKIND;
+		}
+		else if (checkTwoPair(playerHand)) {
+			reward += HandScoreOffset::TWOPAIR;
+		}
+		else if (checkPair(playerHand)) {
+			reward += HandScoreOffset::PAIR;
+		}
+
+
 		return reward;
 	}
 
