@@ -1,7 +1,8 @@
 //
 // Created by osamu on 2020-02-21.
 //
-
+#include <cstdlib> 
+#include <ctime> 
 #include "player.h"
 #include "TexasHoldemGame.h"
 
@@ -21,7 +22,7 @@ namespace game {
 
 	Action Player::getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions) {
 		Action action;
-		action.actionType = p_possibleActions[0];
+		action.actionType = p_possibleActions[rand()%p_possibleActions.size()];
 		action.bet = 1.0;
 		return action;
 	}

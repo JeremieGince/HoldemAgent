@@ -63,28 +63,28 @@ namespace game {
 
     */
     enum HandMaximumValue {
-        HIGHCARD = ACE + KING + QUEEN + JACK + TEN,
-        PAIR = 2*ACE + KING + QUEEN + JACK,
-        TWOPAIR = 2 * ACE + 2 * KING + QUEEN,
-        THREEOFAKIND = 3 * ACE + KING + QUEEN,
-        STRAIGHT = ACE + KING + QUEEN + JACK + TEN,
-        FLUSH = ACE + KING + QUEEN + JACK + TEN,
-        FULLHOUSE = 3 * ACE + 2 * KING,
-        FOUROFAKIND = 4 * ACE + KING,
-        STRAIGHTFLUSH = ACE + KING + QUEEN + JACK + TEN,
-        ROYALFLUSH = ACE + KING + QUEEN + JACK + TEN
+        HIGHCARDMaxVal = ACE + KING + QUEEN + JACK + TEN,
+        PAIRMaxVal = 2*ACE + KING + QUEEN + JACK,
+        TWOPAIRMaxVal = 2 * ACE + 2 * KING + QUEEN,
+        THREEOFAKINDMaxVal = 3 * ACE + KING + QUEEN,
+        STRAIGHTMaxVal = ACE + KING + QUEEN + JACK + TEN,
+        FLUSHMaxVal = ACE + KING + QUEEN + JACK + TEN,
+        FULLHOUSEMaxVal = 3 * ACE + 2 * KING,
+        FOUROFAKINDMaxVal = 4 * ACE + KING,
+        STRAIGHTFLUSHMaxVal = ACE + KING + QUEEN + JACK + TEN,
+        ROYALFLUSHMaxVal = ACE + KING + QUEEN + JACK + TEN
     };
     enum HandScoreOffset{
-        HIGHCARD = 0, 
-        PAIR = HandMaximumValue::HIGHCARD,
-        TWOPAIR = HandMaximumValue::HIGHCARD + HandMaximumValue::PAIR,
-        THREEOFAKIND = HandMaximumValue::HIGHCARD + HandMaximumValue::PAIR + HandMaximumValue::TWOPAIR,
-        STRAIGHT = HandMaximumValue::HIGHCARD + HandMaximumValue::PAIR + HandMaximumValue::TWOPAIR + HandMaximumValue::THREEOFAKIND,
-        FLUSH = HandMaximumValue::HIGHCARD + HandMaximumValue::PAIR + HandMaximumValue::TWOPAIR + HandMaximumValue::THREEOFAKIND + HandMaximumValue::STRAIGHT,
-        FULLHOUSE = HandMaximumValue::HIGHCARD + HandMaximumValue::PAIR + HandMaximumValue::TWOPAIR + HandMaximumValue::THREEOFAKIND + HandMaximumValue::STRAIGHT + HandMaximumValue::FLUSH,
-        FOUROFAKIND = HandMaximumValue::HIGHCARD + HandMaximumValue::PAIR + HandMaximumValue::TWOPAIR + HandMaximumValue::THREEOFAKIND + HandMaximumValue::STRAIGHT + HandMaximumValue::FLUSH + HandMaximumValue::FULLHOUSE,
-        STRAIGHTFLUSH = HandMaximumValue::HIGHCARD + HandMaximumValue::PAIR + HandMaximumValue::TWOPAIR + HandMaximumValue::THREEOFAKIND + HandMaximumValue::STRAIGHT + HandMaximumValue::FLUSH + HandMaximumValue::FULLHOUSE + HandMaximumValue::FOUROFAKIND,
-        ROYALFLUSH = HandMaximumValue::HIGHCARD + HandMaximumValue::PAIR + HandMaximumValue::TWOPAIR + HandMaximumValue::THREEOFAKIND + HandMaximumValue::STRAIGHT + HandMaximumValue::FLUSH + HandMaximumValue::FULLHOUSE + HandMaximumValue::FOUROFAKIND + HandMaximumValue::STRAIGHTFLUSH,
+        HIGHCARDoffset = 0, 
+        PAIRoffset = HIGHCARDMaxVal,
+        TWOPAIRoffset = HIGHCARDMaxVal + PAIRMaxVal,
+        THREEOFAKINDoffset = HIGHCARDMaxVal + PAIRMaxVal + TWOPAIRMaxVal,
+        STRAIGHToffset = HIGHCARDMaxVal + PAIRMaxVal + TWOPAIRMaxVal + THREEOFAKINDMaxVal,
+        FLUSHoffset = HIGHCARDMaxVal + PAIRMaxVal + TWOPAIRMaxVal + THREEOFAKINDMaxVal + STRAIGHTMaxVal,
+        FULLHOUSEoffset = HIGHCARDMaxVal + PAIRMaxVal + TWOPAIRMaxVal + THREEOFAKINDMaxVal + STRAIGHTMaxVal + FLUSHMaxVal,
+        FOUROFAKINDoffset = HIGHCARDMaxVal + PAIRMaxVal + TWOPAIRMaxVal + THREEOFAKINDMaxVal + STRAIGHTMaxVal + FLUSHMaxVal + FULLHOUSEMaxVal,
+        STRAIGHTFLUSHoffset = HIGHCARDMaxVal + PAIRMaxVal + TWOPAIRMaxVal + THREEOFAKINDMaxVal + STRAIGHTMaxVal + FLUSHMaxVal + FULLHOUSEMaxVal + FOUROFAKINDMaxVal,
+        ROYALFLUSHoffset = HIGHCARDMaxVal + PAIRMaxVal + TWOPAIRMaxVal + THREEOFAKINDMaxVal + STRAIGHTMaxVal + FLUSHMaxVal + FULLHOUSEMaxVal + FOUROFAKINDMaxVal + STRAIGHTFLUSHMaxVal,
     };
 
 
@@ -99,17 +99,6 @@ namespace game {
 
         void endHand();
         void applyActionOnPlayer(Player& p_player, Action p_action);
-
-        // checker of hands
-        bool checkRoyalFlush(std::vector<Card> p_hand);
-        bool checkStraightFlush(std::vector<Card> p_hand);
-        bool checkFourOfAKind(std::vector<Card> p_hand);
-        bool checkFullHouse(std::vector<Card> p_hand);
-        bool checkFlush(std::vector<Card> p_hand);
-        bool checkStraight(std::vector<Card> p_hand);
-        bool checkThreeOfAKind(std::vector<Card> p_hand);
-        bool checkTwoPair(std::vector<Card> p_hand);
-        bool checkPair(std::vector<Card> p_hand);
 
 
     public:
@@ -129,6 +118,17 @@ namespace game {
         void doRoundUntilEnd();
         void doHand(bool p_verbose = true);
         std::string getCurrentStateAsString();
+
+        // checker of hands
+        bool checkRoyalFlush(std::vector<Card> p_hand);
+        bool checkStraightFlush(std::vector<Card> p_hand);
+        bool checkFourOfAKind(std::vector<Card> p_hand);
+        bool checkFullHouse(std::vector<Card> p_hand);
+        bool checkFlush(std::vector<Card> p_hand);
+        bool checkStraight(std::vector<Card> p_hand);
+        bool checkThreeOfAKind(std::vector<Card> p_hand);
+        bool checkTwoPair(std::vector<Card> p_hand);
+        bool checkPair(std::vector<Card> p_hand);
 
     };
 }

@@ -2,6 +2,8 @@
 
 
 #include <vector>
+#include<map>
+#include <algorithm>
 #include "TexasHoldemGame.h"
 #include "player.h"
 
@@ -58,6 +60,7 @@ namespace game {
 	bool TexasHoldemGame::doRound() {
 
 		bool endRound = false;
+		vector<int> playerIdxOnCheck;
 
 		for (int i = 0; i < m_currentGameState.players.size(); i++)
 		{
@@ -65,7 +68,18 @@ namespace game {
 
 			Action playerAction = m_currentGameState.players[i].getAction(m_currentGameState, getPossibleActions(m_currentGameState.players[i].m_playerState, m_currentGameState));
 
+			if (playerAction.actionType == CHECK) playerIdxOnCheck.push_back(i);
+
 			applyActionOnPlayer(m_currentGameState.players[i], playerAction);
+		}
+
+		if (!m_currentGameState.currentCheck) {
+			// le check courant n'a pas passé, les joueurs ayant checké doivent rejouer.
+			for each (int idx in playerIdxOnCheck)
+			{
+				Action playerAction = m_currentGameState.players[idx].getAction(m_currentGameState, getPossibleActions(m_currentGameState.players[idx].m_playerState, m_currentGameState));
+				applyActionOnPlayer(m_currentGameState.players[idx], playerAction);
+			}
 		}
 		
 		if (m_currentGameState.board.size() == 5)
@@ -102,10 +116,13 @@ namespace game {
 			// TODO; faire sur que les joueur qui ont check vont Follow, Flod, Raise ou All_in si le check n'est pas accepté.
 			break;
 		case game::ALL_IN:
+			m_currentGameState.currentCheck = m_currentGameState.currentCheck && false;
 			p_player.m_playerState.bet += p_player.m_playerState.bank;
 			p_player.m_playerState.bank = 0;
 			break;
 		case game::RAISE:
+			// TODO: c'est l'action qui doit avoir le raise et non le joueur lui-meme...
+			m_currentGameState.currentCheck = m_currentGameState.currentCheck && false;
 			p_player.m_playerState.bet += p_player.m_playerState.raise;
 			p_player.m_playerState.bank -= p_player.m_playerState.raise;
 			break;
@@ -125,6 +142,7 @@ namespace game {
 
 	vector<ActionType> TexasHoldemGame::getPossibleActions(PlayerState p_playerState, GameState p_gameState) {
 		vector<ActionType> possibleActions { ALL_IN, FLOD };
+		if (m_currentGameState.currentCheck) possibleActions.push_back(CHECK);
 		return possibleActions;
 	}
 
@@ -135,6 +153,7 @@ namespace game {
 
 		nextState.iteration++;
 		m_currentGameState = nextState;
+		m_currentGameState.currentCheck = true;
 	}
 
 	void TexasHoldemGame::endHand() {
@@ -203,6 +222,216 @@ namespace game {
 	}
 
 
+	bool TexasHoldemGame::checkStraightFlush(std::vector<Card> p_hand) {
+		bool sameSuit = true;
+		bool hasACE = false;
+		Asset suit = p_hand[0].reqAsset();
+		vector<int> sequence;
+		int sum = 0;
+		for each (Card card in p_hand)
+		{
+			if (card.reqAsset() != suit) return false;
+
+			if (card.reqNumber() == ACE) {
+				hasACE = true;
+			}
+			else {
+				int num = Asset(card.reqNumber());
+				sequence.push_back(num);
+				sum += num;
+			}
+		}
+
+		sort(sequence.begin(), sequence.end());
+		if (sequence[0] == 2) {
+			sequence.push_back(1);
+			sum += 1;
+			sort(sequence.begin(), sequence.end());
+		}
+		else if(sequence[sequence.size()-1] == Asset(KING)){
+			sequence.push_back(Asset(KING)+1);
+			sum += Asset(KING)+1;
+		}
+
+		int expectedResult = ((sequence[sequence.size()-1] * (sequence[sequence.size()-1] + 1)) / 2) - (((sequence[0]-1) * sequence[0]) / 2);
+
+		return sameSuit && expectedResult == sum;
+	}
+
+	bool TexasHoldemGame::checkFourOfAKind(std::vector<Card> p_hand) {
+		map<CardNumber, int> count;
+		map<CardNumber, int>::iterator it;
+
+		for each (Card card in p_hand)
+		{
+			it = count.find(card.reqNumber());
+			if (it == count.end()) {
+				count.insert({ card.reqNumber(), 1 });
+			}
+			else {
+				it->second++;
+			}
+		}
+		it = count.begin();
+		while (it != count.end()) {
+
+			if (it->second >= 4) return true;
+
+			it++;
+		}
+		return false;
+	}
+
+
+	bool TexasHoldemGame::checkFullHouse(std::vector<Card> p_hand) {
+		bool hasThree = false;
+		bool hasPair = false;
+
+		map<CardNumber, int> count;
+		map<CardNumber, int>::iterator it;
+
+		for each (Card card in p_hand)
+		{
+			it = count.find(card.reqNumber());
+			if (it == count.end()) {
+				count.insert({ card.reqNumber(), 1 });
+			}
+			else {
+				it->second++;
+			}
+		}
+		it = count.begin();
+		while (it != count.end()) {
+
+			if (it->second == 3) hasThree = true;
+			else if (it->second == 2) hasPair = true;
+
+			it++;
+		}
+		return hasPair && hasThree;
+	}
+
+
+	bool TexasHoldemGame::checkFlush(std::vector<Card> p_hand){
+		Asset suit = p_hand[0].reqAsset();
+		for each (Card card in p_hand)
+		{
+			if (card.reqAsset() != suit) return false;
+		}
+		return true;
+	}
+
+
+	bool TexasHoldemGame::checkStraight(std::vector<Card> p_hand) {
+		bool hasACE = false;
+		Asset suit = p_hand[0].reqAsset();
+		vector<int> sequence;
+		int sum = 0;
+		for each (Card card in p_hand)
+		{
+			if (card.reqNumber() == ACE) {
+				hasACE = true;
+			}
+			else {
+				int num = Asset(card.reqNumber());
+				sequence.push_back(num);
+				sum += num;
+			}
+		}
+
+		sort(sequence.begin(), sequence.end());
+		if (sequence[0] == 2) {
+			sequence.push_back(1);
+			sum += 1;
+			sort(sequence.begin(), sequence.end());
+		}
+		else if (sequence[sequence.size() -1] == Asset(KING)) {
+			sequence.push_back(Asset(KING) + 1);
+			sum += Asset(KING) + 1;
+		}
+
+		int expectedResult = ((sequence[sequence.size() - 1] * (sequence[sequence.size() - 1] + 1)) / 2) - (((sequence[0] - 1) * sequence[0]) / 2);
+
+		return expectedResult == sum;
+	}
+
+
+	bool TexasHoldemGame::checkThreeOfAKind(std::vector<Card> p_hand) {
+		map<CardNumber, int> count;
+		map<CardNumber, int>::iterator it;
+
+		for each (Card card in p_hand)
+		{
+			it = count.find(card.reqNumber());
+			if (it == count.end()) {
+				count.insert({ card.reqNumber(), 1 });
+			}
+			else {
+				it->second++;
+			}
+		}
+		it = count.begin();
+		while (it != count.end()) {
+
+			if (it->second >= 3) return true;
+
+			it++;
+		}
+		return false;
+	}
+
+
+	bool TexasHoldemGame::checkTwoPair(std::vector<Card> p_hand) {
+		int pairCount = 0;
+
+		map<CardNumber, int> count;
+		map<CardNumber, int>::iterator it;
+
+		for each (Card card in p_hand)
+		{
+			it = count.find(card.reqNumber());
+			if (it == count.end()) {
+				count.insert({ card.reqNumber(), 1 });
+			}
+			else {
+				it->second++;
+			}
+		}
+		it = count.begin();
+		while (it != count.end()) {
+
+			if (it->second >= 2) pairCount++;
+
+			it++;
+		}
+		return pairCount >= 2;
+	}
+
+
+	bool TexasHoldemGame::checkPair(std::vector<Card> p_hand) {
+		map<CardNumber, int> count;
+		map<CardNumber, int>::iterator it;
+
+		for each (Card card in p_hand)
+		{
+			it = count.find(card.reqNumber());
+			if (it == count.end()) {
+				count.insert({ card.reqNumber(), 1 });
+			}
+			else {
+				it->second++;
+			}
+		}
+		it = count.begin();
+		while (it != count.end()) {
+
+			if (it->second >= 2) return true;
+
+			it++;
+		}
+		return false;
+	}
+
 
 
 	int TexasHoldemGame::getReward(vector<Card> p_hand) {
@@ -217,31 +446,31 @@ namespace game {
 		}
 
 		if (checkRoyalFlush(playerHand)) {
-			reward += HandScoreOffset::ROYALFLUSH;
+			reward += HandScoreOffset::ROYALFLUSHoffset;
 		}
 		else if (checkStraightFlush(playerHand)) {
-			reward += HandScoreOffset::STRAIGHTFLUSH;
+			reward += HandScoreOffset::STRAIGHTFLUSHoffset;
 		}
 		else if (checkFourOfAKind(playerHand)) {
-			reward += HandScoreOffset::FOUROFAKIND;
+			reward += HandScoreOffset::FOUROFAKINDoffset;
 		}
 		else if (checkFullHouse(playerHand)) {
-			reward += HandScoreOffset::FULLHOUSE;
+			reward += HandScoreOffset::FULLHOUSEoffset;
 		}
 		else if (checkFlush(playerHand)) {
-			reward += HandScoreOffset::FLUSH;
+			reward += HandScoreOffset::FLUSHoffset;
 		}
 		else if (checkStraight(playerHand)) {
-			reward += HandScoreOffset::STRAIGHT;
+			reward += HandScoreOffset::STRAIGHToffset;
 		}
 		else if (checkThreeOfAKind(playerHand)) {
-			reward += HandScoreOffset::THREEOFAKIND;
+			reward += HandScoreOffset::THREEOFAKINDoffset;
 		}
 		else if (checkTwoPair(playerHand)) {
-			reward += HandScoreOffset::TWOPAIR;
+			reward += HandScoreOffset::TWOPAIRoffset;
 		}
 		else if (checkPair(playerHand)) {
-			reward += HandScoreOffset::PAIR;
+			reward += HandScoreOffset::PAIRoffset;
 		}
 
 

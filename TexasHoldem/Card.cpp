@@ -104,7 +104,7 @@ namespace game {
         case game::TWO:
             numberStr = "2";
             break;
-        case game::TREE:
+        case game::THREE:
             numberStr = "3";
             break;
         case game::FOUR:
@@ -128,7 +128,7 @@ namespace game {
         case game::TEN:
             numberStr = "10";
             break;
-        case game::JAC:
+        case game::JACK:
             numberStr = "J";
             break;
         case game::QUEEN:

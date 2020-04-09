@@ -69,12 +69,81 @@ void main_test_cuda() {
 
 int main(void) {
 
+	
+
 	Player player_rn0 = Player("rn0", "random");
 	Player player_rn1 = Player("rn1", "random");
 
 	vector<Player> players{ player_rn0, player_rn1 };
 
 	TexasHoldemGame game = TexasHoldemGame(players, 10);
+
+	vector<Card> dummyRoyalFlush{ Card(HEART, TEN), Card(HEART, JACK) , Card(HEART, QUEEN) , Card(HEART, KING) , Card(HEART, ACE) };
+	vector<Card> dummyStraightFlush{ Card(HEART, TWO), Card(HEART, THREE) , Card(HEART, FOUR) , Card(HEART, FIVE) , Card(HEART, ACE) };
+	vector<Card> dummyFourOfKind{ Card(HEART, TEN), Card(CLUBS, TEN) , Card(DIAMONDS, TEN) , Card(SPADES, TEN) , Card(HEART, ACE) };
+	vector<Card> dummyFullHouse{ Card(HEART, TEN), Card(CLUBS, TEN) , Card(DIAMONDS, TEN) , Card(SPADES, ACE) , Card(HEART, ACE) };
+	vector<Card> dummyFlush{ Card(HEART, TEN), Card(HEART, JACK) , Card(HEART, QUEEN) , Card(HEART, KING) , Card(HEART, ACE) };
+	vector<Card> dummyStraight{ Card(HEART, TEN), Card(DIAMONDS, JACK) , Card(SPADES, QUEEN) , Card(HEART, KING) , Card(CLUBS, ACE) };
+	vector<Card> dummyThreeOfKind{ Card(HEART, TEN), Card(SPADES, TEN) , Card(CLUBS, TEN) , Card(HEART, KING) , Card(HEART, ACE) };
+	vector<Card> dummyTwoPair{ Card(HEART, TEN), Card(CLUBS, TEN) , Card(HEART, QUEEN) , Card(HEART, KING) , Card(DIAMONDS, KING) };
+	vector<Card> dummyPair{ Card(SPADES, JACK), Card(HEART, JACK) , Card(HEART, QUEEN) , Card(DIAMONDS, KING) , Card(CLUBS, ACE) };
+
+	if (game.checkRoyalFlush(dummyRoyalFlush)) {
+		cout << "RoyalFlush Done \n";
+	}
+	else {
+		cout << "RoyalFlush Failed \n";
+	}
+	if (game.checkStraightFlush(dummyStraightFlush)) {
+		cout << "checkStraightFlush Done \n";
+	}
+	else {
+		cout << "checkStraightFlush Failed \n";
+	}
+	if (game.checkFourOfAKind(dummyFourOfKind)) {
+		cout << "checkFourOfAKind Done \n";
+	}
+	else {
+		cout << "checkFourOfAKind Failed \n";
+	}
+	if (game.checkFullHouse(dummyFullHouse)) {
+		cout << "checkFullHouse Done \n";
+	}
+	else {
+		cout << "checkFullHouse Failed \n";
+	}
+	if (game.checkFlush(dummyFlush)) {
+		cout << "checkFlush Done \n";
+	}
+	else {
+		cout << "checkFlush Failed \n";
+	}
+	if (game.checkStraight(dummyStraight)) {
+		cout << "checkStraight Done \n";
+	}
+	else {
+		cout << "checkStraight Failed \n";
+	}
+	if (game.checkThreeOfAKind(dummyThreeOfKind)) {
+		cout << "checkThreeOfAKind Done \n";
+	}
+	else {
+		cout << "checkThreeOfAKind Failed \n";
+	}
+	if (game.checkTwoPair(dummyTwoPair)) {
+		cout << "checkTwoPair Done \n";
+	}
+	else {
+		cout << "checkTwoPair Failed \n";
+	}
+	if (game.checkPair(dummyPair)) {
+		cout << "checkPair Done \n";
+	}
+	else {
+		cout << "checkPair Failed \n";
+	}
+	cout << endl;
+
 
 	game.start();
 
