@@ -12,8 +12,13 @@ using namespace std;
 
 namespace game {
 
-	TexasHoldemGame::TexasHoldemGame(vector<Player> p_players, int p_startBank): m_players(p_players), m_startBank(p_startBank) {
-		
+	TexasHoldemGame::TexasHoldemGame(vector<Player*> p_players, int p_startBank): m_players(p_players), m_startBank(p_startBank) {
+		for (int i = 0; i < p_players.size(); i++)
+		{
+			m_playerWins.insert({ p_players[i]->getName(), 0});
+			m_playerGains.insert({ p_players[i]->getName(), 0 });
+			m_playerLoss.insert({ p_players[i]->getName(), 0 });
+		}
 	}
 
 	void TexasHoldemGame::start() {
@@ -27,7 +32,7 @@ namespace game {
 				Card card = m_cardStack.getCard();
 				hand.push_back(card);
 			}
-			m_currentGameState.players[i].setCards(hand);
+			m_currentGameState.players[i]->setCards(hand);
 		}
 		updateCurrentGameState();
 	}
@@ -48,9 +53,9 @@ namespace game {
 
 		for (int i = 0; i < m_currentGameState.players.size(); i++)
 		{
-			m_currentGameState.players[i].m_playerState.bank = m_startBank;
-			m_currentGameState.players[i].m_playerState.bet = 0;
-			m_currentGameState.players[i].m_playerState.active = true;
+			m_currentGameState.players[i]->m_playerState.bank = m_startBank;
+			m_currentGameState.players[i]->m_playerState.bet = 0;
+			m_currentGameState.players[i]->m_playerState.active = true;
 		}
 
 		m_currentGameState.iteration = 0;
@@ -60,31 +65,38 @@ namespace game {
 	bool TexasHoldemGame::doRound() {
 
 		bool endRound = false;
-		vector<int> playerIdxOnCheck;
+		vector<int> playerIdxOnCheck = vector<int>();
+		vector<int> activePlayers = vector<int>();
 
 		for (int i = 0; i < m_currentGameState.players.size(); i++)
 		{
-			if (!m_currentGameState.players[i].m_playerState.active) continue;
+			if (!m_currentGameState.players[i]->m_playerState.active) continue;
 
-			Action playerAction = m_currentGameState.players[i].getAction(m_currentGameState, getPossibleActions(m_currentGameState.players[i].m_playerState, m_currentGameState));
+			if (activePlayers.size() == 0 && i == (m_currentGameState.players.size() - 1)) break;
+			Action playerAction = m_currentGameState.players[i]->getAction(m_currentGameState, getPossibleActions(m_currentGameState.players[i]->m_playerState, m_currentGameState));
 
 			if (playerAction.actionType == CHECK) playerIdxOnCheck.push_back(i);
 
 			applyActionOnPlayer(m_currentGameState.players[i], playerAction);
+			if (m_currentGameState.players[i]->m_playerState.active) activePlayers.push_back(i);
 		}
 
 		if (!m_currentGameState.currentCheck) {
 			// le check courant n'a pas passé, les joueurs ayant checké doivent rejouer.
-			for each (int idx in playerIdxOnCheck)
+			for (int i = 0; i < playerIdxOnCheck.size(); i++)
 			{
-				Action playerAction = m_currentGameState.players[idx].getAction(m_currentGameState, getPossibleActions(m_currentGameState.players[idx].m_playerState, m_currentGameState));
+				int idx = playerIdxOnCheck[i];
+
+				if (activePlayers.size() == 0 && i == (playerIdxOnCheck.size() - 1)) break;
+
+				Action playerAction = m_currentGameState.players[idx]->getAction(m_currentGameState, getPossibleActions(m_currentGameState.players[idx]->m_playerState, m_currentGameState));
 				applyActionOnPlayer(m_currentGameState.players[idx], playerAction);
+				if(!m_currentGameState.players[i]->m_playerState.active) activePlayers.erase(remove(activePlayers.begin(), activePlayers.end(), idx), activePlayers.end());
 			}
 		}
 		
-		if (m_currentGameState.board.size() == 5)
+		if (m_currentGameState.board.size() == 5 || activePlayers.size() <= 1)
 		{
-			endHand();
 			endRound = true;
 		}
 		else {
@@ -97,51 +109,90 @@ namespace game {
 
 	void TexasHoldemGame::doHand(bool p_verbose) {
 		bool endRound = false;
+		if (p_verbose) cout << getCurrentStateAsString();
 
 		while (!endRound)
 		{
-			if (p_verbose) cout << getCurrentStateAsString();
 			endRound = doRound();
+			if (p_verbose) cout << getCurrentStateAsString();
+
+			if (endRound) {
+				int winner = endHand(p_verbose);
+			}
 			
+			
+		}
+	} 
+
+	void TexasHoldemGame::doHands(bool p_verbose, int p_hmHands) {
+		for (int i = 0; i < p_hmHands; i++)
+		{
+			start();
+			doHand(p_verbose);
+		}
+
+		if (p_verbose) cout << getWinsStatsAsString();
+	}
+
+	void TexasHoldemGame::incrementPlayerWins(string p_playerName) {
+		std::map<string, int>::iterator it;
+		it = m_playerWins.find(p_playerName);
+		if (it != m_playerWins.end()) {
+			m_playerWins[p_playerName]++;
 		}
 	}
 
-	void TexasHoldemGame::applyActionOnPlayer(Player& p_player, Action p_action) {
+	void TexasHoldemGame::increasePlayerGains(string p_playerName, int p_gains) {
+		std::map<string, int>::iterator it;
+		it = m_playerGains.find(p_playerName);
+		if (it != m_playerGains.end()) {
+			m_playerGains[p_playerName] += p_gains;
+		}
+	}
+
+	void TexasHoldemGame::increasePlayerLoss(string p_playerName, int p_banking) {
+		std::map<string, int>::iterator it;
+		it = m_playerLoss.find(p_playerName);
+		if (it != m_playerLoss.end()) {
+			m_playerLoss[p_playerName] -= p_banking;
+		}
+	}
+
+	void TexasHoldemGame::applyActionOnPlayer(Player* p_player, Action p_action) {
 		ActionType actionType = p_action.actionType;
 
 		switch (actionType)
 		{
 		case game::CHECK:
 			m_currentGameState.currentCheck = m_currentGameState.currentCheck && true;
-			// TODO; faire sur que les joueur qui ont check vont Follow, Flod, Raise ou All_in si le check n'est pas accepté.
 			break;
 		case game::ALL_IN:
 			m_currentGameState.currentCheck = m_currentGameState.currentCheck && false;
-			p_player.m_playerState.bet += p_player.m_playerState.bank;
-			p_player.m_playerState.bank = 0;
+			p_player->m_playerState.bet += p_player->m_playerState.bank;
+			p_player->m_playerState.bank = 0;
 			break;
 		case game::RAISE:
 			// TODO: c'est l'action qui doit avoir le raise et non le joueur lui-meme...
 			m_currentGameState.currentCheck = m_currentGameState.currentCheck && false;
-			p_player.m_playerState.bet += p_player.m_playerState.raise;
-			p_player.m_playerState.bank -= p_player.m_playerState.raise;
+			p_player->m_playerState.bet += p_player->m_playerState.raise;
+			p_player->m_playerState.bank -= p_player->m_playerState.raise;
 			break;
-		case game::FLOD:
-			p_player.m_playerState.active = false;
+		case game::FOLD:
+			p_player->m_playerState.active = false;
 			break;
 		case game::FOLLOW:
-			p_player.m_playerState.bank -= m_currentGameState.currentBet - p_player.m_playerState.bet;
-			p_player.m_playerState.bet = m_currentGameState.currentBet;
+			p_player->m_playerState.bank -= m_currentGameState.currentBet - p_player->m_playerState.bet;
+			p_player->m_playerState.bet = m_currentGameState.currentBet;
 			break;
 		default:
-			p_player.m_playerState.active = false;
+			p_player->m_playerState.active = false;
 			break;
 		}
 	}
 
 
 	vector<ActionType> TexasHoldemGame::getPossibleActions(PlayerState p_playerState, GameState p_gameState) {
-		vector<ActionType> possibleActions { ALL_IN, FLOD };
+		vector<ActionType> possibleActions { ALL_IN, FOLD, FOLLOW};
 		if (m_currentGameState.currentCheck) possibleActions.push_back(CHECK);
 		return possibleActions;
 	}
@@ -156,32 +207,54 @@ namespace game {
 		m_currentGameState.currentCheck = true;
 	}
 
-	void TexasHoldemGame::endHand() {
+	int TexasHoldemGame::endHand(bool p_verbose) {
 		int banking = 0;
 		int maxReward = 0;
 		int winner = 0;
+		int activeCount = 0;
+
+		bool draw = false;
+		vector<int> winners;
 
 		for (int i = 0; i < m_currentGameState.players.size(); i++)
-		{			
-			
-			int playerReward = getReward(m_currentGameState.players[i].getCards());
+		{
+			if (m_currentGameState.players[i]->m_playerState.active) activeCount++;
+			int playerReward = getReward(m_currentGameState.players[i]->getCards()) * (int) m_currentGameState.players[i]->m_playerState.active;
 
 			if (playerReward > maxReward) {
 				maxReward = playerReward;
 				winner = i;
 			}
+			if (playerReward == maxReward){
+				if(!draw) winners.push_back(winner);
+				winners.push_back(i);
+				draw = true;
+			}
 			
-			banking += m_currentGameState.players[i].m_playerState.bet;
+			banking += m_currentGameState.players[i]->m_playerState.bet;
 		}
 
-		m_currentGameState.players[winner].m_playerState.bank += banking;
+		if (draw) {
+			// TODO: split the banking
+		}
 
-		cout << "\n " + m_currentGameState.players[winner].getName() + " win " + "a banking of " + to_string(banking) + " with method " + m_currentGameState.players[winner].getMethod() + "\n";
+		m_currentGameState.players[winner]->m_playerState.bank += banking;
 
+		incrementPlayerWins(m_currentGameState.players[winner]->getName());
+		increasePlayerGains(m_currentGameState.players[winner]->getName(), banking - m_currentGameState.players[winner]->m_playerState.bet);
 
+		for (int i = 0; i < m_currentGameState.players.size(); i++)
+		{
+			if (i != winner) increasePlayerLoss(m_currentGameState.players[i]->getName(), m_currentGameState.players[i]->m_playerState.bet);
+		}
+		
+		m_handCounter++;
+		m_totalGains += banking;
+
+		if(p_verbose) cout << "\n " + m_currentGameState.players[winner]->getName() + " win " + "a banking of " + to_string(banking) + " with method " + m_currentGameState.players[winner]->getMethod() + "\n";
+
+		return winner;
 	}
-
-
 
 	GameState TexasHoldemGame::getState() {
 		return m_currentGameState;
@@ -479,11 +552,25 @@ namespace game {
 
 
 
+	string TexasHoldemGame::getWinsStatsAsString() {
+		string out = "\n Number of hands: " + to_string(m_handCounter) + "\n";
+		map<string, int>::iterator it = m_playerWins.begin();
+		while (it != m_playerWins.end())
+		{
+			out += "Player: " + it->first 
+				+ ", win rate: " + to_string(((float)it->second) / m_handCounter) 
+				+ ", gains: " + to_string(m_playerGains[it->first]) 
+				+ ", loss: " + to_string(m_playerLoss[it->first]) 
+				+ " \n";
 
+			it++;
+		}
+		return out;
+	}
 
 
 	string TexasHoldemGame::getCurrentStateAsString() {
-		string out = "";
+		string out = "\n";
 		out += "iteration: " + to_string(m_currentGameState.iteration) + "\n\n";
 
 		out += "Board: ";
@@ -497,18 +584,18 @@ namespace game {
 		out += "--- Players: \n \n";
 		for (int i = 0; i < m_currentGameState.players.size(); i++)
 		{
-			out += m_currentGameState.players[i].getName() + " - " + m_currentGameState.players[i].getMethod() + "\n";
+			out += m_currentGameState.players[i]->getName() + " - " + m_currentGameState.players[i]->getMethod() + "\n";
 			out += "Cards: ";
-			for each (Card card in m_currentGameState.players[i].getCards())
+			for each (Card card in m_currentGameState.players[i]->getCards())
 			{
 				out += card.asString() + " - ";
 			}
 			out += "\n";
-			out += "Active: " + to_string(m_currentGameState.players[i].m_playerState.active) + "\n";
-			out += "Bank: " + to_string(m_currentGameState.players[i].m_playerState.bank) + " bet: " 
-				+ to_string(m_currentGameState.players[i].m_playerState.bet) 
-				+ " raise: " + to_string(m_currentGameState.players[i].m_playerState.raise) + "\n";
-			out += "Current reward: " + to_string(getReward(m_currentGameState.players[i].getCards())) + "\n";
+			out += "Active: " + to_string(m_currentGameState.players[i]->m_playerState.active) + "\n";
+			out += "Bank: " + to_string(m_currentGameState.players[i]->m_playerState.bank) + " bet: " 
+				+ to_string(m_currentGameState.players[i]->m_playerState.bet) 
+				+ " raise: " + to_string(m_currentGameState.players[i]->m_playerState.raise) + "\n";
+			out += "Current reward: " + to_string(getReward(m_currentGameState.players[i]->getCards())) + "\n";
 			out += "--- \n";
 		}
 

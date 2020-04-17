@@ -32,11 +32,10 @@ namespace game {
 
     class Player {
 
-    private:
+    protected:
         std::string m_name;
         std::string m_method;
         std::vector<Card> m_cards;
-        //GameState m_currentGameState;
 
     public:
         Player();
@@ -44,7 +43,7 @@ namespace game {
 
         PlayerState m_playerState;
 
-        Action getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions);
+        virtual Action getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions);
 
         void setCards(std::vector<Card> p_cards);
         std::vector<Card> getCards();

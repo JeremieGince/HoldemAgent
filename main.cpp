@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <iostream>
+#include <chrono>
 
 // CUDA runtime
 #include <cuda.h>
@@ -11,6 +12,7 @@
 // Project includes
 #include <Card.h>
 #include <player.h>
+#include "BaseAgent.h"
 #include <TexasHoldemGame.h>
 
 using namespace game;
@@ -73,8 +75,12 @@ int main(void) {
 
 	Player player_rn0 = Player("rn0", "random");
 	Player player_rn1 = Player("rn1", "random");
+	Player player_rn2 = Player("rn2", "random");
+	Player player_rn3 = Player("rn3", "random");
+	BaseAgent player_base = BaseAgent("base0");
 
-	vector<Player> players{ player_rn0, player_rn1 };
+	vector<Player*> players{ &player_rn0, &player_rn1, &player_rn2, &player_rn3, &player_base };
+	//vector<Player*> players{&player_base, &player_rn0 };
 
 	TexasHoldemGame game = TexasHoldemGame(players, 10);
 
@@ -144,10 +150,17 @@ int main(void) {
 	}
 	cout << endl;
 
+	auto startTime = chrono::steady_clock::now();
 
 	game.start();
 
-	game.doHand();
+	game.doHands(false, 1000000);
+
+	cout << game.getWinsStatsAsString() << endl;
+
+	auto endTime = chrono::steady_clock::now();
+
+	cout << "--- Elapse time: " << to_string(chrono::duration_cast<chrono::seconds>(endTime-startTime).count()) << " [s] ---";
 
 	int f;
 	std::cin >> f;

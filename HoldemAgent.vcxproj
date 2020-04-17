@@ -129,12 +129,14 @@
   <ItemGroup>
     <ClCompile Include="CardStack.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="TexasHoldem\BaseAgent.cpp" />
     <ClCompile Include="texasholdem\Card.cpp" />
     <ClCompile Include="TexasHoldem\contract_exception.cpp" />
     <ClCompile Include="TexasHoldem\player.cpp" />
     <ClCompile Include="TexasHoldem\TexasHoldemGame.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="TexasHoldem\BaseAgent.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="MCTS\MCTS.h" />
     <ClInclude Include="texasholdem\Card.h" />
