@@ -192,8 +192,17 @@ namespace game {
 
 
 	vector<ActionType> TexasHoldemGame::getPossibleActions(PlayerState p_playerState, GameState p_gameState) {
-		vector<ActionType> possibleActions { ALL_IN, FOLD, FOLLOW};
-		if (m_currentGameState.currentCheck) possibleActions.push_back(CHECK);
+		vector<ActionType> possibleActions { };
+
+		if (p_gameState.board.size() < 5) {
+			
+			possibleActions.push_back(ALL_IN);
+			possibleActions.push_back(FOLD);
+			possibleActions.push_back(FOLLOW);
+
+			if (p_gameState.currentCheck) possibleActions.push_back(CHECK);
+		}
+		
 		return possibleActions;
 	}
 
@@ -254,6 +263,32 @@ namespace game {
 		if(p_verbose) cout << "\n " + m_currentGameState.players[winner]->getName() + " win " + "a banking of " + to_string(banking) + " with method " + m_currentGameState.players[winner]->getMethod() + "\n";
 
 		return winner;
+	}
+
+	GameState TexasHoldemGame::getRandomNextState(GameState p_gameState, Action p_action)
+	{
+
+		switch (p_action.actionType)
+		{
+		case game::CHECK:
+			p_gameState.currentCheck = p_gameState.currentCheck && true;
+			break;
+		case game::ALL_IN:
+			p_gameState.currentCheck = p_gameState.currentCheck && false;
+			break;
+		case game::RAISE:
+			// TODO: c'est l'action qui doit avoir le raise et non le joueur lui-meme...
+			p_gameState.currentCheck = p_gameState.currentCheck && false;
+			break;
+		case game::FOLD:
+			break;
+		case game::FOLLOW:
+			break;
+		default:
+			break;
+		}
+
+		return p_gameState;
 	}
 
 	GameState TexasHoldemGame::getState() {

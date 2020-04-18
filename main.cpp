@@ -154,7 +154,7 @@ int main(void) {
 
 	game.start();
 
-	game.doHands(false, 1000000);
+	game.doHands(false, 1000);
 
 	cout << game.getWinsStatsAsString() << endl;
 

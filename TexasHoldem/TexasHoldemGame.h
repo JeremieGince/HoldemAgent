@@ -40,6 +40,7 @@ namespace game {
         std::vector<Card> board;
         int currentBet = 0;
         bool currentCheck = true;
+        // TODO: add the CardStack
     };
 
     /*
@@ -117,9 +118,9 @@ namespace game {
     public:
         TexasHoldemGame(std::vector<Player*> p_players, int p_startBank);
 
-        static GameState getRandomNextState(GameState p_gameState);
+        static GameState getRandomNextState(GameState p_gameState, Action p_action);
         GameState getState();
-        std::vector<ActionType> getPossibleActions(PlayerState p_playerState, GameState p_gameState);
+        static std::vector<ActionType> getPossibleActions(PlayerState p_playerState, GameState p_gameState);
 
         int getReward(std::vector<Card> p_hand);
 
