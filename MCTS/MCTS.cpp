@@ -70,6 +70,7 @@ namespace game {
 
 	void MCTS::generateTree(GameState p_gameState)
 	{
+
 	}
 
 	Tree* MCTS::generateTree(Tree* p_tree)

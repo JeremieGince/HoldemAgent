@@ -34,7 +34,7 @@ namespace game {
         Node* parent;
         std::vector<Node*> children;
     };
-
+    
     struct Tree {
         Node root;
         std::vector<Node*> nodes;
@@ -56,6 +56,7 @@ namespace game {
         Tree* generateTree(Tree* p_tree);
 
         void attachTrees(Tree* p_rootTree, Tree* p_leafTree);
+
         void attachTrees(Tree* p_rootTree, Tree* p_leafTree, DecisionNode* p_dNode);
         void attachTree(DecisionNode* p_dNode, Tree* p_tree);
 

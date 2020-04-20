@@ -41,6 +41,8 @@ namespace game {
         Player();
         Player(std::string p_name, std::string p_method);
 
+        int m_playerIdx;
+
         PlayerState m_playerState;
 
         virtual Action getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions);
