@@ -7,7 +7,8 @@ using namespace std;
 namespace game {
 
 
-	MCTS_dummy_player::MCTS_dummy_player(Tree* p_tree) : Player("MCTS_SLAVE", "MCTS"), m_tree(p_tree), actual_Node(&(p_tree->root)) {
+	MCTS_dummy_player::MCTS_dummy_player(Tree* p_tree, string p_name) : Player(p_name, "MCTS"), m_tree(p_tree), actual_Node(&(p_tree->root))
+	{
 	}
 
 
@@ -32,6 +33,7 @@ namespace game {
 			}
 		}
 		chosen_action = (*possible_decisions)[iter]->decision;
+		m_tree->slave_last_choice = (*possible_decisions)[iter];
 		return chosen_action;
 	}
 

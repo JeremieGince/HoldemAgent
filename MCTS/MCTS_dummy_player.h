@@ -44,6 +44,7 @@ namespace game {
 
     struct Tree {
         Node root;
+        DecisionNode* slave_last_choice;
     };
 
     class MCTS_dummy_player : public Player {
@@ -53,7 +54,7 @@ namespace game {
         DecisionNode* actual_DecisionNode;
 
     public:
-        MCTS_dummy_player(Tree* p_tree);
+        MCTS_dummy_player(Tree* p_tree, std::string p_name);
 
         virtual Action getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions);
         void update_decisions_of_Node(std::vector<ActionType> p_possible_actions);

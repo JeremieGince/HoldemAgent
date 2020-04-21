@@ -7,25 +7,52 @@ using namespace std;
 namespace game {
 
 
-	MCTS::MCTS(std::string p_name) : Player(p_name, "MCTS") {
+	MCTS::MCTS(std::string p_name) : Player(p_name, "MCTS")
+	{
 		m_tree.root.is_not_root = false;
 	}
 
 
-	Action MCTS::getAction(GameState p_gameState, vector<ActionType> p_possibleActions) {
+	Action MCTS::getAction(GameState p_gameState, vector<ActionType> p_possibleActions)
+	{
 
 		create_game_from_state(p_gameState);
-		Action chosen_action;
 		for (int i = 0; i < 10000; i++) {
+			simulate_game();
+			Node last_Node;
+			last_Node.is_leaf = true;
+			last_Node.gameState = simulation_game.getState();
+			last_Node.parent = m_tree.slave_last_choice;
+			m_tree.slave_last_choice->children.push_back(&last_Node);
+			if (is_decision_sccessful()) {
+				backpropagation_of_probabilities(&last_Node);
+			}
 
 		}
+		float max_success_rate = 0;
+		int iter_of_optimal_choice = -1;
+		for (int i = 0; i < m_tree.root.children.size(); i++)
+		{
+			float success_rate = (m_tree.root.children[i]->nb_achievements) / (m_tree.root.children[i]->nb_visits);
+			if (success_rate > max_success_rate)
+			{
+				iter_of_optimal_choice = i;
+			}
 
-		
-		return chosen_action;
+
+		}
+		last_decision_node = m_tree.root.children[iter_of_optimal_choice];
+		return last_decision_node->decision;
 	}
-	void MCTS::backpropagation_of_probabilities(Node* final_Node) {
+	void MCTS::simulate_game()
+	{
+
+	}
+	void MCTS::backpropagation_of_probabilities(Node* final_Node)
+	{
 		Node* current_Node = final_Node;
-		while (current_Node->is_not_root) {
+		while (current_Node->is_not_root)
+		{
 			DecisionNode* parent_decision = current_Node->parent;
 			current_Node->nb_achievements++;
 			parent_decision->nb_achievements++;
@@ -33,12 +60,16 @@ namespace game {
 		}
 
 	}
-	void MCTS::initialise_tree(GameState p_gameState) {
-		if (!(m_tree.root.children).empty()) {
+	void MCTS::initialise_tree(GameState p_gameState)
+	{
+		if (!(m_tree.root.children).empty())
+		{
 			bool game_state_found = false;
 			Node* node_of_the_game_state;
-			for (int i = 0; i < (last_decision_node->children).size(); i++) {
-				if ((last_decision_node->children)[i]->gameState.board == p_gameState.board) {
+			for (int i = 0; i < (last_decision_node->children).size(); i++)
+			{
+				if ((last_decision_node->children)[i]->gameState.board == p_gameState.board)
+				{
 					game_state_found = true;
 					node_of_the_game_state = (last_decision_node->children)[i];
 				}
@@ -61,12 +92,15 @@ namespace game {
 			m_tree.root.gameState = p_gameState;
 		}
 	}
-	bool MCTS::is_decision_sccessful() {
-		GameState* finishing_state = &(simulation_game.getState());
-		if ((*finishing_state).winnerIdx == m_playerIdx) {
+	bool MCTS::is_decision_sccessful()
+	{
+		GameState* finishing_state = &simulation_game.getState();
+		if ((*finishing_state).winnerIdx == m_playerIdx)
+		{
 			return true;
 		}
-		else if ((!(finishing_state->players[m_playerIdx]->m_playerState.active)) && ((*finishing_state).expectedWinnerIdx != m_playerIdx)) {
+		else if ((!(finishing_state->players[m_playerIdx]->m_playerState.active)) && (finishing_state->expectedWinnerIdx != m_playerIdx))
+		{
 			return true;
 		}
 		else
@@ -77,28 +111,34 @@ namespace game {
 	}
 
 
-	void MCTS::set_game(GameState p_gameState) {
+	void MCTS::set_game(GameState p_gameState)
+	{
 		vector<Card> board = p_gameState.board;
 		vector<Card> hand_cards = getCards();
 		map<int, vector<Card>> card_set = { {-1, board}, {m_playerIdx, hand_cards} };
 		simulation_game.setStartingCards(card_set);
 	}
 
-	void MCTS::create_game_from_state(GameState p_gameState) {
+	void MCTS::create_game_from_state(GameState p_gameState)
+	{
 		initialise_tree(p_gameState);
 		vector<Player*> simulation_players =regenarate_players(p_gameState.players);
 		simulation_game = TexasHoldemGame(simulation_players, 10);
 		set_game(p_gameState);
 	}
-	vector<Player*> MCTS::regenarate_players(vector<Player*> real_players) {
+	vector<Player*> MCTS::regenarate_players(vector<Player*> real_players)
+	{
 		vector<Player*> simulated_players;
-		for (int i = 0; i < real_players.size(); i++) {
-			if (real_players[i]->getMethod() == "MCTS") {
-				MCTS_dummy_player slave_player = MCTS_dummy_player(&m_tree);
+		for (int i = 0; i < real_players.size(); i++)
+		{
+			if (real_players[i]->getMethod() == "MCTS")
+			{
+				MCTS_dummy_player slave_player = MCTS_dummy_player(&m_tree, real_players[i]->getName());
 				simulated_players.push_back(&slave_player);
 
 			}
-			if (real_players[i]->getMethod() == "Base") {
+			if (real_players[i]->getMethod() == "Base")
+			{
 				BaseAgent base_player = BaseAgent(real_players[i]->getName());
 				simulated_players.push_back(&base_player);
 
