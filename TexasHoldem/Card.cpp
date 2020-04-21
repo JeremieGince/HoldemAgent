@@ -40,6 +40,11 @@ namespace game {
         
     }
 
+    Card* Card::copy() const
+    {
+        return new Card(m_asset, m_number);
+    }
+
     /**
      * \brief Getter of attribute m_asset.
      * \return The asset of the card.
