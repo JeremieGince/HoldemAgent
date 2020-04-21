@@ -22,6 +22,7 @@ namespace game {
 			m_playerWins.insert({ p_players[i]->getName(), 0});
 			m_playerGains.insert({ p_players[i]->getName(), 0 });
 			m_playerLoss.insert({ p_players[i]->getName(), 0 });
+			m_playerExpectedWins.insert({ p_players[i]->getName(), 0 });
 		}
 	}
 
@@ -39,6 +40,7 @@ namespace game {
 		m_currentGameState.iteration = 0;
 		m_currentGameState.players = m_players;
 		m_currentGameState.cardStack = &m_cardStack;
+		m_currentGameState.terminal = false;
 
 		for (int i = 0; i < m_currentGameState.players.size(); i++)
 		{
@@ -139,7 +141,9 @@ namespace game {
 		
 		if (m_currentGameState.board.size() == 5 || activePlayers.size() <= 1)
 		{
+			array<int, 2> winners;
 			endRound = true;
+			winners = endHand();
 		}
 		else {
 			m_currentGameState.board.push_back(m_cardStack.getCard());
@@ -157,13 +161,14 @@ namespace game {
 		while (!endRound)
 		{
 			endRound = doRound();
-			if (p_verbose) cout << getCurrentStateAsString();
 
 			if (endRound) {
-				winners = endHand(p_verbose);
-				int winner = winners[0];
-				int expectedWinner = winners[1];
+				int winner = m_currentGameState.winnerIdx;
+				int expectedWinner = m_currentGameState.expectedWinnerIdx;
+				winners = {winner, expectedWinner};
 			}
+
+			if (p_verbose) cout << getCurrentStateAsString();
 		}
 		return winners;
 	} 
@@ -260,7 +265,16 @@ namespace game {
 		m_currentGameState.currentCheck = true;
 	}
 
-	array<int, 2> TexasHoldemGame::endHand(bool p_verbose) {
+	void TexasHoldemGame::incrementPlayerExpectedWins(std::string p_playerName)
+	{
+		std::map<string, int>::iterator it;
+		it = m_playerExpectedWins.find(p_playerName);
+		if (it != m_playerExpectedWins.end()) {
+			m_playerExpectedWins[p_playerName]++;
+		}
+	}
+
+	array<int, 2> TexasHoldemGame::endHand() {
 		int banking = 0;
 
 		int maxReward = 0;
@@ -306,6 +320,7 @@ namespace game {
 		m_currentGameState.players[winner]->m_playerState.bank += banking;
 
 		incrementPlayerWins(m_currentGameState.players[winner]->getName());
+		incrementPlayerExpectedWins(m_currentGameState.players[expectedWinner]->getName());
 		increasePlayerGains(m_currentGameState.players[winner]->getName(), banking - m_currentGameState.players[winner]->m_playerState.bet);
 
 		for (int i = 0; i < m_currentGameState.players.size(); i++)
@@ -315,8 +330,6 @@ namespace game {
 		
 		m_handCounter++;
 		m_totalGains += banking;
-
-		if(p_verbose) cout << "\n " + m_currentGameState.players[winner]->getName() + " win " + "a banking of " + to_string(banking) + " with method " + m_currentGameState.players[winner]->getMethod() + "\n";
 
 		m_currentGameState.winnerIdx = winner;
 		m_currentGameState.expectedWinnerIdx = expectedWinner;
@@ -677,10 +690,14 @@ namespace game {
 		map<string, int>::iterator it = m_playerWins.begin();
 		while (it != m_playerWins.end())
 		{
+			float win_rate = ((float)it->second) / m_handCounter;
+			float expected_win_rate = ((float)m_playerExpectedWins[it->first]) / m_handCounter;
 			out += "Player: " + it->first 
-				+ ", win rate: " + to_string(((float)it->second) / m_handCounter) 
-				+ ", gains: " + to_string(m_playerGains[it->first]) 
-				+ ", loss: " + to_string(m_playerLoss[it->first]) 
+				+ ", win rate: " + to_string(win_rate) 
+				+ ", expected win rate: " + to_string(expected_win_rate)
+				+ ", efficiency: " + to_string(1 - abs(win_rate - expected_win_rate))
+				+ ", gains: " + to_string(((float)m_playerGains[it->first]) / m_totalGains)
+				+ ", loss: " + to_string(((float)m_playerLoss[it->first]) / m_totalGains)
 				+ " \n";
 
 			it++;
@@ -717,6 +734,11 @@ namespace game {
 				+ " raise: " + to_string(m_currentGameState.players[i]->m_playerState.raise) + "\n";
 			out += "Current reward: " + to_string(getReward(m_currentGameState.players[i]->getCards())) + "\n";
 			out += "--- \n";
+		}
+
+		if (m_currentGameState.terminal) {
+			out += "Winner: " + m_currentGameState.players[m_currentGameState.winnerIdx]->getName() + " - " + m_currentGameState.players[m_currentGameState.winnerIdx]->getMethod() + "\n";
+			out += "Expected Winner: " + m_currentGameState.players[m_currentGameState.expectedWinnerIdx]->getName() + " - " + m_currentGameState.players[m_currentGameState.expectedWinnerIdx]->getMethod() + "\n";
 		}
 
 		out += "\n\n\n";

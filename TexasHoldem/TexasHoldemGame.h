@@ -12,6 +12,7 @@
 #include <array>
 #include <map>
 #include <string>
+#include <cmath>
 #include "contract_exception.h"
 #include "Card.h"
 #include "CardStack.h"
@@ -116,7 +117,10 @@ namespace game {
         std::map<std::string, int> m_playerLoss;
         void increasePlayerLoss(std::string p_playerName, int p_banking);
 
-        std::array<int, 2> endHand(bool p_verbose=true);
+        std::map<std::string, int> m_playerExpectedWins;
+        void incrementPlayerExpectedWins(std::string p_playerName);
+
+        std::array<int, 2> endHand();
         void applyActionOnPlayer(Player* p_player, Action p_action);
 
 

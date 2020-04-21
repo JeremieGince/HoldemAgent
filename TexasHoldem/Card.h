@@ -30,7 +30,9 @@ namespace game {
         const CardNumber& reqNumber() const;
         void  verifyInvariant() const;
         const std::string& asString() const;
-        int GetId();
+        int GetId() const;
+
+        friend bool operator==(const Card& p_lCard, const Card& p_rCard);
 
         static const int minNumber = TWO;
         static const int maxNumber = ACE;

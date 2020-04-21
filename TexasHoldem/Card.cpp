@@ -70,7 +70,7 @@ namespace game {
         return p_number * Asset(p_asset);
     }
 
-    int Card::GetId() {
+    int Card::GetId() const {
         return id;
     }
 
@@ -151,5 +151,10 @@ namespace game {
         out += Card::numberAsString(m_number) + " of " + Card::assetAsString(m_asset);
         return out;
     }
+
+	bool operator==(const Card& p_lCard, const Card& p_rCard)
+	{
+		return p_lCard.GetId() == p_rCard.GetId();
+	}
 }
 

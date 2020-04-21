@@ -25,7 +25,6 @@ namespace game {
 		if (p_possibleActions.size() > 0) {
 			action.actionType = p_possibleActions[rand() % p_possibleActions.size()];
 		}
-		
 		action.bet = 1.0;
 		return action;
 	}

@@ -164,7 +164,6 @@ int main(void) {
 	game.setStartingCards(startingCard);
 
 	cout << endl << game.getCurrentStateAsString() << endl;
-
 	
 
 	game.doHands(false, 100000);
