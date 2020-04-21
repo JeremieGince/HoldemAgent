@@ -81,6 +81,11 @@ namespace game {
 		}
 	}
 
+	void TexasHoldemGame::setStartingCards(std::vector<std::map<vector<Card>, int>> p_cardsToSet)
+	{
+
+	}
+
 	void TexasHoldemGame::resetCardStack()
 	{
 		m_cardStack.reset();
