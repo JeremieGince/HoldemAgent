@@ -4,8 +4,8 @@
  * \author Jérémie Gince (111 224 046)
  */
 
-#ifndef BASEAGENT_H
-#define BASEAGENT_H
+#ifndef MCTS_H
+#define MCTS_H
 
 
 
@@ -22,49 +22,49 @@
 
 namespace game {
 
+    struct DecisionNode;
 
     struct Node {
         GameState gameState;
+        float nb_visits;
+        float nb_achievements;
         DecisionNode* parent;
         std::vector<DecisionNode*> children;
     };
 
     struct DecisionNode {
         Action decision;
+        float nb_visits;
+        float nb_achievements;
         Node* parent;
         std::vector<Node*> children;
     };
     
     struct Tree {
         Node root;
-        std::vector<Node*> nodes;
-        std::vector<DecisionNode*> decisionNodes;
-        std::vector<Node*> leaves;
     };
 
 
     class MCTS : public Player {
     private:
-        Node m_root;
-        std::vector<Node*> m_nodes;
-        std::vector<DecisionNode*> m_decisionNodes;
-
         Tree m_tree;
+        Node* actual_Node;
+        DecisionNode* actual_DecisionNode;
+        TexasHoldemGame simulation_game;
 
-        void generateTree(GameState p_gameState);
-        void generateTree(Node p_root);
-        Tree* generateTree(Tree* p_tree);
 
-        void attachTrees(Tree* p_rootTree, Tree* p_leafTree);
+        void backpropagation_of_probabilities();
+        void create_game_from_state(GameState p_gameState);
+        void simulate_game();
+        void follow_slave();
+        void get_info_from_game();
 
-        void attachTrees(Tree* p_rootTree, Tree* p_leafTree, DecisionNode* p_dNode);
-        void attachTree(DecisionNode* p_dNode, Tree* p_tree);
+        
 
     public:
         MCTS(std::string p_name);
 
         virtual Action getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions);
-
         std::string getNodeAsSTring(Node* p_node);
         std::string getDecisionNodeAsString(DecisionNode* p_dNode);
         std::string getTreeAsString(Tree* p_tree);
@@ -79,4 +79,4 @@ namespace game {
 
 
 
-#endif // BASEAGENT_H
+#endif // MCTS_H

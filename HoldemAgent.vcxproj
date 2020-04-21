@@ -130,6 +130,7 @@
     <ClCompile Include="CardStack.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MCTS\MCTS.cpp" />
+    <ClCompile Include="MCTS\MCTS_dummy_player.cpp" />
     <ClCompile Include="QAgent\QAgent.cpp" />
     <ClCompile Include="TexasHoldem\BaseAgent.cpp" />
     <ClCompile Include="texasholdem\Card.cpp" />
@@ -138,6 +139,7 @@
     <ClCompile Include="TexasHoldem\TexasHoldemGame.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MCTS\MCTS_dummy_player.h" />
     <ClInclude Include="QAgent\QAgent.h" />
     <ClInclude Include="TexasHoldem\BaseAgent.h" />
     <ClInclude Include="util.h" />

@@ -44,8 +44,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/gince/Documents/GitHub/HoldemAgent/ExternalLibs/cuda/include/cuda/std/detail/libcxx/include/out/build/x64-Debug",
-		"source" : "C:/Users/gince/Documents/GitHub/HoldemAgent/ExternalLibs/cuda/include/cuda/std/detail/libcxx/include"
+		"build" : "C:/Users/SAM/Documents/GitHub/HoldemAgent/ExternalLibs/cuda/include/cuda/std/detail/libcxx/include/out/build/x64-Debug",
+		"source" : "C:/Users/SAM/Documents/GitHub/HoldemAgent/ExternalLibs/cuda/include/cuda/std/detail/libcxx/include"
 	},
 	"version" : 
 	{
