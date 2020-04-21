@@ -16,12 +16,35 @@
 #include "contract_exception.h"
 #include "player.h"
 #include "TexasHoldemGame.h"
-#include "MCTS.h"
 
 
 
 namespace game {
 
+    struct DecisionNode;
+
+    struct Node {
+        GameState gameState;
+        float nb_visits = 1;
+        float nb_achievements = 0;
+        DecisionNode* parent;
+        std::vector<DecisionNode*> children;
+        bool is_leaf = false;
+        bool is_not_root = true;
+    };
+
+    struct DecisionNode {
+        Action decision;
+        float nb_visits = 0;
+        float nb_achievements = 0;
+        Node* parent;
+        std::vector<Node*> children;
+        bool is_leaf = false;
+    };
+
+    struct Tree {
+        Node root;
+    };
 
     class MCTS_dummy_player : public Player {
     private:

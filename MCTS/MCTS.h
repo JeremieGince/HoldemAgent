@@ -13,50 +13,28 @@
 #include <vector>
 #include <map>
 #include <string>
-#include "contract_exception.h"
-#include "player.h"
-#include "TexasHoldemGame.h"
+#include "MCTS_dummy_player.h"
+#include "BaseAgent.h"
 
 
 
 
 namespace game {
 
-    struct DecisionNode;
-
-    struct Node {
-        GameState gameState;
-        float nb_visits = 1;
-        float nb_achievements = 0;
-        DecisionNode* parent;
-        std::vector<DecisionNode*> children;
-        bool is_leaf = false;
-    };
-
-    struct DecisionNode {
-        Action decision;
-        float nb_visits = 0;
-        float nb_achievements = 0;
-        Node* parent;
-        std::vector<Node*> children;
-        bool is_leaf =false;
-    };
-    
-    struct Tree {
-        Node root;
-    };
-
-
     class MCTS : public Player {
     private:
         Tree m_tree;
         TexasHoldemGame simulation_game;
+        DecisionNode* last_decision_node;
 
 
-        void backpropagation_of_probabilities();
+        void backpropagation_of_probabilities(Node* final_Node);
         void create_game_from_state(GameState p_gameState);
+        std::vector<Player*> regenarate_players(std::vector<Player*> real_players);
+        void initialise_tree(GameState p_gameState);
+        void set_game(GameState p_gameState);
         void simulate_game();
-        void get_info_from_game();
+        bool is_decision_sccessful();
 
         
 
