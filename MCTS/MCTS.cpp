@@ -18,7 +18,8 @@ namespace game {
 
 		create_game_from_state(p_gameState);
 		for (int i = 0; i < 10000; i++) {
-			simulate_game();
+			set_game(p_gameState);
+			simulation_game.doHand(false);
 			Node last_Node;
 			last_Node.is_leaf = true;
 			last_Node.gameState = simulation_game.getState();
@@ -44,10 +45,7 @@ namespace game {
 		last_decision_node = m_tree.root.children[iter_of_optimal_choice];
 		return last_decision_node->decision;
 	}
-	void MCTS::simulate_game()
-	{
 
-	}
 	void MCTS::backpropagation_of_probabilities(Node* final_Node)
 	{
 		Node* current_Node = final_Node;
@@ -124,7 +122,6 @@ namespace game {
 		initialise_tree(p_gameState);
 		vector<Player*> simulation_players =regenarate_players(p_gameState.players);
 		simulation_game = TexasHoldemGame(simulation_players, 10);
-		set_game(p_gameState);
 	}
 	vector<Player*> MCTS::regenarate_players(vector<Player*> real_players)
 	{
@@ -133,7 +130,7 @@ namespace game {
 		{
 			if (real_players[i]->getMethod() == "MCTS")
 			{
-				MCTS_dummy_player slave_player = MCTS_dummy_player(&m_tree, real_players[i]->getName());
+				MCTS_dummy_player slave_player = MCTS_dummy_player(&m_tree, real_players[i]->getName() + "_slave");
 				simulated_players.push_back(&slave_player);
 
 			}
