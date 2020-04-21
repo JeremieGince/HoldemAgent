@@ -120,6 +120,15 @@ namespace game {
         std::map<std::string, int> m_playerExpectedWins;
         void incrementPlayerExpectedWins(std::string p_playerName);
 
+        std::map<std::string, int> m_playerSuccessfulWins;
+        void incrementPlayerSuccessfulWins(std::string p_playerName);
+
+        std::map<std::string, int> m_playerSuccessfulLoss;
+        void incrementPlayerSuccessfulLoss(std::string p_playerName);
+
+        std::map<std::string, int> m_playerBluffDetected;
+        void incrementPlayerBluffDetected(std::string p_playerName);
+
         std::array<int, 2> endHand();
         void applyActionOnPlayer(Player* p_player, Action p_action);
 
@@ -152,6 +161,12 @@ namespace game {
         std::string getCurrentStateAsString();
 
         std::string getWinsStatsAsString();
+
+        float getSuccessfulWinRate(std::string p_playerName);
+        float getSuccessfulLossRate(std::string p_playerName);
+        float getBluffDetectedRate(std::string p_playerName);
+        float getEfficiency(std::string p_playerName);
+        float getNonRandomEfficiency(std::string p_playerName);
 
         // checker of hands
         static bool checkRoyalFlush(std::vector<Card> p_hand);

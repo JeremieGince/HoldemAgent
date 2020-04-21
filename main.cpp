@@ -69,19 +69,11 @@ void main_test_cuda() {
 }
 */
 
-int main(void) {
-
-	
-
-	Player player_rn0 = Player("rn0", "random");
+void checkHands() {
 	Player player_rn1 = Player("rn1", "random");
-	Player player_rn2 = Player("rn2", "random");
-	Player player_rn3 = Player("rn3", "random");
-	BaseAgent player_base = BaseAgent("base0");
+	BaseAgent player_base0 = BaseAgent("base0");
 
-	vector<Player*> players{ &player_rn0, &player_rn1, &player_rn2, &player_rn3, &player_base };
-	//vector<Player*> players{&player_base, &player_rn0 };
-
+	vector<Player*> players{ &player_base0, &player_rn1 };
 	TexasHoldemGame game = TexasHoldemGame(players, 10);
 
 	vector<Card> dummyRoyalFlush{ Card(HEART, TEN), Card(HEART, JACK) , Card(HEART, QUEEN) , Card(HEART, KING) , Card(HEART, ACE) };
@@ -149,24 +141,32 @@ int main(void) {
 		cout << "checkPair Failed \n";
 	}
 	cout << endl;
+}
+
+int main(void) {
+
+	
+
+	Player player_rn0 = Player("rn0", "random");
+	Player player_rn1 = Player("rn1", "random");
+	Player player_rn2 = Player("rn2", "random");
+	Player player_rn3 = Player("rn3", "random");
+	BaseAgent player_base0 = BaseAgent("base0");
+	BaseAgent player_base1 = BaseAgent("base1");
+	BaseAgent player_base2 = BaseAgent("base2");
+	BaseAgent player_base3 = BaseAgent("base3");
+
+	vector<Player*> players{ &player_rn0, &player_rn1, &player_rn2, &player_rn3, &player_base0, &player_base1, &player_base2, &player_base3 };
+	//vector<Player*> players{&player_base, &player_rn1 };
+	//vector<Player*> players{ &player_base0, &player_base1, &player_base2 };
+
+	TexasHoldemGame game = TexasHoldemGame(players, 100);
 
 	auto startTime = chrono::steady_clock::now();
 
 	game.start();
 
-	cout << endl << game.getCurrentStateAsString() << endl;
-
-	map<int, vector<Card>> startingCard = {
-		{-1, vector<Card>{Card(HEART, TEN), Card(HEART, JACK), Card(HEART, QUEEN)}},
-		{4, vector<Card>{Card(HEART, KING), Card(HEART, ACE)}},
-	};
-	
-	game.setStartingCards(startingCard);
-
-	cout << endl << game.getCurrentStateAsString() << endl;
-	
-
-	game.doHands(false, 100000);
+	game.doHands(false, 1000000);
 
 	cout << game.getWinsStatsAsString() << endl;
 
