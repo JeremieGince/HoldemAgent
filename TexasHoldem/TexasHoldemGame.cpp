@@ -28,6 +28,7 @@ namespace game {
 	void TexasHoldemGame::start() {
 		reset();
 
+		redistributeCards();
 		
 		updateCurrentGameState();
 	}
@@ -50,6 +51,9 @@ namespace game {
 	}
 
 	void TexasHoldemGame::redistributeCards(std::vector<int> p_dontTuchIdx) {
+		/*
+		idx = -1 -> board
+		*/
 		m_cardStack.reset();
 
 		vector<Card> board = vector<Card>();
@@ -77,6 +81,10 @@ namespace game {
 		}
 	}
 
+	void TexasHoldemGame::resetCardStack()
+	{
+		m_cardStack.reset();
+	}
 
 	bool TexasHoldemGame::doRound() {
 
@@ -623,12 +631,25 @@ namespace game {
 
 	void TexasHoldemGame::setBoard(std::vector<Card> p_board)
 	{
-		ASSERTION(p_board.size() >= 3 && p_board.size() <= 5);
+		ASSERTION(p_board.size() >= 3 && p_board.size() <= 5 && p_board.size() == m_currentGameState.board.size());
+		for (int i = 0; i < p_board.size(); i++)
+		{
+			m_cardStack.removeFromStack(p_board[i]);
+			m_cardStack.putInTheStack(m_currentGameState.board[i]);
+		}
 		m_currentGameState.board = p_board;
+
 	}
 
-	void TexasHoldemGame::setPlayerHand(std::vector<Card> p_hand)
+	void TexasHoldemGame::setPlayerHand(std::vector<Card> p_hand, int p_playerIdx)
 	{
+		ASSERTION(p_hand.size() == 2);
+		for (int i = 0; i < p_hand.size(); i++)
+		{
+			m_cardStack.removeFromStack(p_hand[i]);
+			m_cardStack.putInTheStack(m_currentGameState.players[p_playerIdx]->getCards()[i]);
+		}
+		m_currentGameState.players[p_playerIdx]->setCards(p_hand);
 	}
 
 

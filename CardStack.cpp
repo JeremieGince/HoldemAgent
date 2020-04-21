@@ -41,4 +41,57 @@ namespace game {
 		}
 	}
 
+	void CardStack::removeFromStack(Card p_card)
+	{
+		std::stack<Card> tempStack = std::stack<Card>();
+		while (!m_cardStack.empty())
+		{
+			Card card = m_cardStack.top();
+			m_cardStack.pop();
+
+			if (card.GetId() != p_card.GetId()) {
+				tempStack.push(card);
+			}
+		}
+
+		while (!tempStack.empty())
+		{
+			Card card = tempStack.top();
+			tempStack.pop();
+
+			m_cardStack.push(card);
+		}
+
+	}
+
+	void CardStack::putInTheStack(Card p_card)
+	{
+		m_cardStack.push(p_card);
+		shuffle();
+	}
+
+	void CardStack::shuffle()
+	{
+		vector<Card> cards;
+		while (!m_cardStack.empty())
+		{
+			Card card = m_cardStack.top();
+			m_cardStack.pop();
+
+			cards.push_back(card);
+		}
+
+		std::random_shuffle(cards.begin(), cards.end());
+
+		for each (Card card in cards)
+		{
+			m_cardStack.push(card);
+		}
+
+	}
+
+
+
+	
+
 }

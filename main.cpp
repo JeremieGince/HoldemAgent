@@ -153,8 +153,12 @@ int main(void) {
 	auto startTime = chrono::steady_clock::now();
 
 	game.start();
+	game.setBoard(vector<Card>{Card(HEART, TEN), Card(HEART, JACK), Card(HEART, QUEEN)});
+	game.setPlayerHand(vector<Card>{Card(HEART, KING), Card(HEART, ACE)}, 4);
 
-	game.doHands(false, 1000);
+	cout << endl << game.getCurrentStateAsString() << endl;
+
+	game.doHands(false, 10);
 
 	cout << game.getWinsStatsAsString() << endl;
 

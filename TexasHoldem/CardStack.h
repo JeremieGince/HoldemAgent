@@ -18,6 +18,12 @@ namespace game{
 
 		void reset();
 
+		void removeFromStack(Card p_card);
+
+		void putInTheStack(Card p_card);
+
+		void shuffle();
+
 	};
 
 }

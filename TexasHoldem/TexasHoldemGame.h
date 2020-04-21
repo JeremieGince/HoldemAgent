@@ -131,8 +131,9 @@ namespace game {
         int getReward(std::vector<Card> p_hand);
 
         void setBoard(std::vector<Card> p_board);
-        void setPlayerHand(std::vector<Card> p_hand);
+        void setPlayerHand(std::vector<Card> p_hand, int p_playerIdx);
         void redistributeCards(std::vector<int> p_dontTuchIdx = {});
+        void resetCardStack();
 
         void start();
         bool doRound();
