@@ -83,7 +83,13 @@ namespace game {
 
 	void TexasHoldemGame::setStartingCards(std::vector<std::map<vector<Card>, int>> p_cardsToSet)
 	{
+		for (int mapIdx = 0; mapIdx < p_cardsToSet.size(); mapIdx++)
+		{
 
+		}
+		setBoard(vector<Card>{Card(HEART, TEN), Card(HEART, JACK), Card(HEART, QUEEN)});
+		setPlayerHand(vector<Card>{Card(HEART, KING), Card(HEART, ACE)}, 4);
+		redistributeCards(vector<int>{-1, 4});
 	}
 
 	void TexasHoldemGame::resetCardStack()
