@@ -26,6 +26,8 @@ namespace game {
     public:
         Card(Asset p_asset, CardNumber p_number);
 
+        Card* copy() const;
+
         const Asset& reqAsset() const;
         const CardNumber& reqNumber() const;
         void  verifyInvariant() const;
