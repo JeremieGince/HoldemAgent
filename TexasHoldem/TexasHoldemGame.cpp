@@ -12,7 +12,7 @@ using namespace std;
 
 namespace game {
 
-	TexasHoldemGame::TexasHoldemGame() {
+	TexasHoldemGame::TexasHoldemGame(): m_players(), m_startBank(0){
 
 	}
 
