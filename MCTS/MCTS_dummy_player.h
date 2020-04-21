@@ -33,6 +33,8 @@ namespace game {
         MCTS_dummy_player(Tree* p_tree);
 
         virtual Action getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions);
+        void update_decisions_of_Node(std::vector<ActionType> p_possible_actions);
+        void create_new_Node(GameState p_gameState);
 
     };
 
