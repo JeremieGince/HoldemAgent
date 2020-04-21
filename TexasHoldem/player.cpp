@@ -22,7 +22,10 @@ namespace game {
 
 	Action Player::getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions) {
 		Action action;
-		action.actionType = p_possibleActions[rand()%p_possibleActions.size()];
+		if (p_possibleActions.size() > 0) {
+			action.actionType = p_possibleActions[rand() % p_possibleActions.size()];
+		}
+		
 		action.bet = 1.0;
 		return action;
 	}

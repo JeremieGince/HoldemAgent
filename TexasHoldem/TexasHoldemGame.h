@@ -133,7 +133,7 @@ namespace game {
         void setBoard(std::vector<Card> p_board);
         void setPlayerHand(std::vector<Card> p_hand, int p_playerIdx);
         void redistributeCards(std::vector<int> p_dontTuchIdx = {});
-        void setStartingCards(std::vector<std::map<vector<Card>, int>> p_cardsToSet);
+        void setStartingCards(std::map<int, std::vector<Card>> p_cardsToSet);
 
         void resetCardStack();
 

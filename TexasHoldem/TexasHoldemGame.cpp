@@ -81,15 +81,22 @@ namespace game {
 		}
 	}
 
-	void TexasHoldemGame::setStartingCards(std::vector<std::map<vector<Card>, int>> p_cardsToSet)
+	void TexasHoldemGame::setStartingCards(std::map<int, std::vector<Card>>p_cardsToSet)
 	{
-		for (int mapIdx = 0; mapIdx < p_cardsToSet.size(); mapIdx++)
-		{
+		std::map<int, std::vector<Card>>::iterator mapIt;
+		vector<int> dontTuchIdx;
 
+		for (mapIt = p_cardsToSet.begin(); mapIt != p_cardsToSet.end(); mapIt++)
+		{
+			if (mapIt->first == -1) {
+				setBoard(mapIt->second);
+			}
+			else {
+				setPlayerHand(mapIt->second, mapIt->first);
+			}
+			dontTuchIdx.push_back(mapIt->first);
 		}
-		setBoard(vector<Card>{Card(HEART, TEN), Card(HEART, JACK), Card(HEART, QUEEN)});
-		setPlayerHand(vector<Card>{Card(HEART, KING), Card(HEART, ACE)}, 4);
-		redistributeCards(vector<int>{-1, 4});
+		redistributeCards(dontTuchIdx);
 	}
 
 	void TexasHoldemGame::resetCardStack()
