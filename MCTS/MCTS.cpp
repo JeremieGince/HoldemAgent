@@ -17,7 +17,7 @@ namespace game {
 	{
 
 		create_game_from_state(p_gameState);
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 10; i++) {
 			set_game(p_gameState);
 			simulation_game.doHand(false);
 			Node last_Node;
@@ -120,7 +120,7 @@ namespace game {
 	void MCTS::create_game_from_state(GameState p_gameState)
 	{
 		initialise_tree(p_gameState);
-		vector<Player*> simulation_players =regenarate_players(p_gameState.players);
+		vector<Player*> simulation_players = regenarate_players(p_gameState.players);
 		simulation_game = TexasHoldemGame(simulation_players, 10);
 	}
 	vector<Player*> MCTS::regenarate_players(vector<Player*> real_players)
@@ -130,20 +130,20 @@ namespace game {
 		{
 			if (real_players[i]->getMethod() == "MCTS")
 			{
-				MCTS_dummy_player slave_player = MCTS_dummy_player(&m_tree, real_players[i]->getName() + "_slave");
-				simulated_players.push_back(&slave_player);
+				MCTS_dummy_player* slave_player = new MCTS_dummy_player(&m_tree, real_players[i]->getName());
+				simulated_players.push_back(slave_player);
 
 			}
 			if (real_players[i]->getMethod() == "Base")
 			{
-				BaseAgent base_player = BaseAgent(real_players[i]->getName());
-				simulated_players.push_back(&base_player);
+				BaseAgent* base_player = new BaseAgent(real_players[i]->getName());
+				simulated_players.push_back(base_player);
 
 			}
 			else
 			{
-				Player player = Player(real_players[i]->getName(), real_players[i]->getMethod());
-				simulated_players.push_back(&player);
+				Player* player = new Player(real_players[i]->getName(), real_players[i]->getMethod());
+				simulated_players.push_back(player);
 			}
 
 		}

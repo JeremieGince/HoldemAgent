@@ -11,7 +11,7 @@ using namespace std;
 
 namespace game {
 
-	Player::Player() : m_name(), m_method(), m_cards() {
+	Player::Player() : m_name(""), m_method(""), m_cards() {
 
 	}
 
