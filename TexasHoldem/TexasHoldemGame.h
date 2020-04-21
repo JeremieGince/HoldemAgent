@@ -162,8 +162,8 @@ namespace game {
 
         std::string getWinsStatsAsString();
 
-        float getSuccessfulWinRate(std::string p_playerName);
-        float getSuccessfulLossRate(std::string p_playerName);
+        float getSuccessfullWinRate(std::string p_playerName);
+        float getSuccessfullLossRate(std::string p_playerName);
         float getBluffDetectedRate(std::string p_playerName);
         float getEfficiency(std::string p_playerName);
         float getNonRandomEfficiency(std::string p_playerName);

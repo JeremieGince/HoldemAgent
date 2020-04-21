@@ -747,24 +747,24 @@ namespace game {
 		return out;
 	}
 
-	float TexasHoldemGame::getSuccessfulWinRate(std::string p_playerName)
+	float TexasHoldemGame::getSuccessfullWinRate(std::string p_playerName)
 	{
 		float sw_rate = 0.0f;
 		if (m_playerExpectedWins[p_playerName]>0) sw_rate = ((float)m_playerSuccessfulWins[p_playerName]) / m_playerExpectedWins[p_playerName];
 		return sw_rate;
 	}
 
-	float TexasHoldemGame::getSuccessfulLossRate(std::string p_playerName)
+	float TexasHoldemGame::getSuccessfullLossRate(std::string p_playerName)
 	{
 		float sl_rate = 0.0f;
-		if((m_handCounter - m_playerExpectedWins[p_playerName]) > 0) ((float)m_playerSuccessfulLoss[p_playerName]) / (m_handCounter - m_playerExpectedWins[p_playerName]);
+		if((m_handCounter - m_playerExpectedWins[p_playerName]) > 0) sl_rate = ((float)m_playerSuccessfulLoss[p_playerName]) / (m_handCounter - m_playerExpectedWins[p_playerName]);
 		return sl_rate;
 	}
 
 	float TexasHoldemGame::getBluffDetectedRate(std::string p_playerName)
 	{
 		float bd_rate = 0.0f;
-		if(m_playerWins[p_playerName] > 0) ((float)m_playerBluffDetected[p_playerName]) / m_playerWins[p_playerName];
+		if(m_playerWins[p_playerName] > 0) bd_rate = ((float)m_playerBluffDetected[p_playerName]) / m_playerWins[p_playerName];
 		return bd_rate;
 	}
 
@@ -773,9 +773,9 @@ namespace game {
 		float efficiency = 0.0f;
 		if (m_handCounter > 0) {
 
-			float sw_rate = getSuccessfulWinRate(p_playerName);
+			float sw_rate = getSuccessfullWinRate(p_playerName);
 			float bd_rate = getBluffDetectedRate(p_playerName);
-			float sl_rate = getSuccessfulLossRate(p_playerName);
+			float sl_rate = getSuccessfullLossRate(p_playerName);
 
 			efficiency = (sw_rate + bd_rate + sl_rate)/3.0f;
 		}

@@ -156,8 +156,8 @@ int main(void) {
 	BaseAgent player_base2 = BaseAgent("base2");
 	BaseAgent player_base3 = BaseAgent("base3");
 
-	vector<Player*> players{ &player_rn0, &player_rn1, &player_rn2, &player_rn3, &player_base0, &player_base1, &player_base2, &player_base3 };
-	//vector<Player*> players{&player_base, &player_rn1 };
+	//vector<Player*> players{ &player_rn0, &player_rn1, &player_rn2, &player_rn3, &player_base0, &player_base1, &player_base2, &player_base3 };
+	vector<Player*> players{&player_base0, &player_rn1 };
 	//vector<Player*> players{ &player_base0, &player_base1, &player_base2 };
 
 	TexasHoldemGame game = TexasHoldemGame(players, 100);
