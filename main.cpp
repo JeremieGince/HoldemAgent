@@ -155,10 +155,11 @@ int main(void) {
 	game.start();
 	game.setBoard(vector<Card>{Card(HEART, TEN), Card(HEART, JACK), Card(HEART, QUEEN)});
 	game.setPlayerHand(vector<Card>{Card(HEART, KING), Card(HEART, ACE)}, 4);
+	// game.redistributeCards(vector<int>{-1, 4});
 
 	cout << endl << game.getCurrentStateAsString() << endl;
 
-	game.doHands(false, 10);
+	game.doHands(false, 1);
 
 	cout << game.getWinsStatsAsString() << endl;
 
