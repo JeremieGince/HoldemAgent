@@ -26,18 +26,20 @@ namespace game {
 
     struct Node {
         GameState gameState;
-        float nb_visits;
-        float nb_achievements;
+        float nb_visits = 1;
+        float nb_achievements = 0;
         DecisionNode* parent;
         std::vector<DecisionNode*> children;
+        bool is_leaf = false;
     };
 
     struct DecisionNode {
         Action decision;
-        float nb_visits;
-        float nb_achievements;
+        float nb_visits = 0;
+        float nb_achievements = 0;
         Node* parent;
         std::vector<Node*> children;
+        bool is_leaf =false;
     };
     
     struct Tree {
@@ -48,15 +50,12 @@ namespace game {
     class MCTS : public Player {
     private:
         Tree m_tree;
-        Node* actual_Node;
-        DecisionNode* actual_DecisionNode;
         TexasHoldemGame simulation_game;
 
 
         void backpropagation_of_probabilities();
         void create_game_from_state(GameState p_gameState);
         void simulate_game();
-        void follow_slave();
         void get_info_from_game();
 
         
