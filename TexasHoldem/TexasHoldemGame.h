@@ -9,6 +9,7 @@
 
 #include <iostream> 
 #include <vector>
+#include <array>
 #include <map>
 #include <string>
 #include "contract_exception.h"
@@ -40,7 +41,11 @@ namespace game {
         std::vector<Card> board;
         int currentBet = 0;
         bool currentCheck = true;
-        // TODO: add the CardStack
+        CardStack* cardStack;
+
+        bool terminal = false;
+        int winnerIdx = 0;
+        int expectedWinnerIdx = 0;
     };
 
     /*
@@ -111,11 +116,12 @@ namespace game {
         std::map<std::string, int> m_playerLoss;
         void increasePlayerLoss(std::string p_playerName, int p_banking);
 
-        int endHand(bool p_verbose=true);
+        std::array<int, 2> endHand(bool p_verbose=true);
         void applyActionOnPlayer(Player* p_player, Action p_action);
 
 
     public:
+        TexasHoldemGame();
         TexasHoldemGame(std::vector<Player*> p_players, int p_startBank);
 
         static GameState getRandomNextState(GameState p_gameState, Action p_action);
@@ -124,13 +130,17 @@ namespace game {
 
         int getReward(std::vector<Card> p_hand);
 
+        void setBoard(std::vector<Card> p_board);
+        void setPlayerHand(std::vector<Card> p_hand);
+        void redistributeCards(std::vector<int> p_dontTuchIdx = {});
+
         void start();
         bool doRound();
         void reset();
 
         void updateCurrentGameState();
         void doRoundUntilEnd();
-        void doHand(bool p_verbose = true);
+        std::array<int, 2> doHand(bool p_verbose = true);
         void doHands(bool p_verbose = true, int p_hmHands = 10);
         std::string getCurrentStateAsString();
 

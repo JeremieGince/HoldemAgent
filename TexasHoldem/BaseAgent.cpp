@@ -79,7 +79,6 @@ namespace game {
 			}
 		}
 
-
 		return action;
 	}
 

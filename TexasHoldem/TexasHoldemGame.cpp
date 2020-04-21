@@ -12,6 +12,10 @@ using namespace std;
 
 namespace game {
 
+	TexasHoldemGame::TexasHoldemGame() {
+
+	}
+
 	TexasHoldemGame::TexasHoldemGame(vector<Player*> p_players, int p_startBank): m_players(p_players), m_startBank(p_startBank) {
 		for (int i = 0; i < p_players.size(); i++)
 		{
@@ -24,32 +28,16 @@ namespace game {
 	void TexasHoldemGame::start() {
 		reset();
 
-		for(int i = 0; i < m_currentGameState.players.size(); i++)
-		{
-			vector<Card> hand;
-			for (int i = 0; i < 2; i++)
-			{
-				Card card = m_cardStack.getCard();
-				hand.push_back(card);
-			}
-			m_currentGameState.players[i]->setCards(hand);
-		}
+		
 		updateCurrentGameState();
 	}
 
 	void TexasHoldemGame::reset() {
-
 		m_cardStack.reset();
-
-		vector<Card> cards = vector<Card>();
-
-		for (int i = 0; i < 3; i++) {
-			cards.push_back(m_cardStack.getCard());
-		}
-
-		m_currentGameState.board = cards;
+		
 		m_currentGameState.iteration = 0;
 		m_currentGameState.players = m_players;
+		m_currentGameState.cardStack = &m_cardStack;
 
 		for (int i = 0; i < m_currentGameState.players.size(); i++)
 		{
@@ -59,6 +47,34 @@ namespace game {
 		}
 
 		m_currentGameState.iteration = 0;
+	}
+
+	void TexasHoldemGame::redistributeCards(std::vector<int> p_dontTuchIdx) {
+		m_cardStack.reset();
+
+		vector<Card> board = vector<Card>();
+
+		if (find(p_dontTuchIdx.begin(), p_dontTuchIdx.end(), -1) == p_dontTuchIdx.end()) {
+			for (int i = 0; i < 3; i++) {
+				board.push_back(m_cardStack.getCard());
+			}
+			m_currentGameState.board = board;
+		}
+
+		for (int i = 0; i < m_currentGameState.players.size(); i++)
+		{
+			if (find(p_dontTuchIdx.begin(), p_dontTuchIdx.end(), i) == p_dontTuchIdx.end()) {
+				vector<Card> hand;
+				for (int i = 0; i < 2; i++)
+				{
+					Card card = m_cardStack.getCard();
+					hand.push_back(card);
+				}
+				m_currentGameState.players[i]->setCards(hand);
+				m_currentGameState.players[i]->m_playerIdx = i;
+			}
+			
+		}
 	}
 
 
@@ -107,8 +123,9 @@ namespace game {
 		return endRound;
 	}
 
-	void TexasHoldemGame::doHand(bool p_verbose) {
+	array<int, 2> TexasHoldemGame::doHand(bool p_verbose) {
 		bool endRound = false;
+		array<int, 2> winners;
 		if (p_verbose) cout << getCurrentStateAsString();
 
 		while (!endRound)
@@ -117,11 +134,12 @@ namespace game {
 			if (p_verbose) cout << getCurrentStateAsString();
 
 			if (endRound) {
-				int winner = endHand(p_verbose);
+				winners = endHand(p_verbose);
+				int winner = winners[0];
+				int expectedWinner = winners[1];
 			}
-			
-			
 		}
+		return winners;
 	} 
 
 	void TexasHoldemGame::doHands(bool p_verbose, int p_hmHands) {
@@ -216,11 +234,15 @@ namespace game {
 		m_currentGameState.currentCheck = true;
 	}
 
-	int TexasHoldemGame::endHand(bool p_verbose) {
+	array<int, 2> TexasHoldemGame::endHand(bool p_verbose) {
 		int banking = 0;
+
 		int maxReward = 0;
 		int winner = 0;
 		int activeCount = 0;
+
+		int maxExpectedReward = 0;
+		int expectedWinner = 0;
 
 		bool draw = false;
 		vector<int> winners;
@@ -228,12 +250,20 @@ namespace game {
 		for (int i = 0; i < m_currentGameState.players.size(); i++)
 		{
 			if (m_currentGameState.players[i]->m_playerState.active) activeCount++;
-			int playerReward = getReward(m_currentGameState.players[i]->getCards()) * (int) m_currentGameState.players[i]->m_playerState.active;
+			
+			int expectedPlayerReward = getReward(m_currentGameState.players[i]->getCards());
+			int playerReward = expectedPlayerReward * (int)m_currentGameState.players[i]->m_playerState.active;
 
 			if (playerReward > maxReward) {
 				maxReward = playerReward;
 				winner = i;
 			}
+
+			if (expectedPlayerReward > maxExpectedReward) {
+				maxExpectedReward = expectedPlayerReward;
+				expectedWinner = i;
+			}
+
 			if (playerReward == maxReward){
 				if(!draw) winners.push_back(winner);
 				winners.push_back(i);
@@ -262,7 +292,13 @@ namespace game {
 
 		if(p_verbose) cout << "\n " + m_currentGameState.players[winner]->getName() + " win " + "a banking of " + to_string(banking) + " with method " + m_currentGameState.players[winner]->getMethod() + "\n";
 
-		return winner;
+		m_currentGameState.winnerIdx = winner;
+		m_currentGameState.expectedWinnerIdx = expectedWinner;
+		m_currentGameState.terminal = true;
+
+		array<int, 2> out = { winner, expectedWinner };
+
+		return out;
 	}
 
 	GameState TexasHoldemGame::getRandomNextState(GameState p_gameState, Action p_action)
@@ -583,6 +619,16 @@ namespace game {
 
 
 		return reward;
+	}
+
+	void TexasHoldemGame::setBoard(std::vector<Card> p_board)
+	{
+		ASSERTION(p_board.size() >= 3 && p_board.size() <= 5);
+		m_currentGameState.board = p_board;
+	}
+
+	void TexasHoldemGame::setPlayerHand(std::vector<Card> p_hand)
+	{
 	}
 
 
