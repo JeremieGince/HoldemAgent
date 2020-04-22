@@ -29,6 +29,10 @@ namespace game {
 		return action;
 	}
 
+	void Player::reset()
+	{
+	}
+
 	void Player::setCards(vector<Card> p_cards) {
 		m_cards = p_cards;
 	}

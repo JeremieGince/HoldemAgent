@@ -52,6 +52,11 @@ namespace game {
 			m_currentGameState.players[i]->m_playerState.active = true;
 		}
 
+		for (int i = 0; i < m_players.size(); i++)
+		{
+			m_players[i]->reset();
+		}
+
 		m_currentGameState.iteration = 0;
 	}
 

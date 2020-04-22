@@ -46,6 +46,7 @@ namespace game {
         PlayerState m_playerState;
 
         virtual Action getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions);
+        virtual void reset();
 
         void setCards(std::vector<Card> p_cards);
         std::vector<Card> getCards();
