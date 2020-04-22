@@ -160,10 +160,11 @@ int main(void) {
 
 	//vector<Player*> players{ &player_rn0, &player_rn1, &player_rn2, &player_rn3, &player_base0, &player_base1, &player_base2, &player_base3 };
 	vector<Player*> players{&mcts_agent, &player_base0 };
+	//vector<Player*> players{ &player_base0, &player_base1 };
 	//vector<Player*> players{ &player_base0, &player_base1, &player_base2 };
 
 
-	TexasHoldemGame game = TexasHoldemGame(players, 100);
+	TexasHoldemGame game = TexasHoldemGame(players, 10);
 
 	auto startTime = chrono::steady_clock::now();
 
