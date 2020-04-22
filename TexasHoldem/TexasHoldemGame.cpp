@@ -17,7 +17,6 @@ namespace game {
 	}
 
 	TexasHoldemGame::TexasHoldemGame(vector<Player*> p_players, int p_startBank): m_players(p_players), m_startBank(p_startBank) {
-		cout << "nb player: " + to_string(m_players.size());
 		for (int i = 0; i < p_players.size(); i++)
 		{
 			m_playerWins.insert({ p_players[i]->getName(), 0});
