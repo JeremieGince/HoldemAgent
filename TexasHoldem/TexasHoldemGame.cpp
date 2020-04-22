@@ -13,7 +13,7 @@ using namespace std;
 namespace game {
 
 	TexasHoldemGame::TexasHoldemGame(): m_players(), m_startBank(0){
-
+		
 	}
 
 	TexasHoldemGame::TexasHoldemGame(vector<Player*> p_players, int p_startBank): m_players(p_players), m_startBank(p_startBank) {
@@ -181,6 +181,8 @@ namespace game {
 			}
 
 			if (p_verbose) cout << getCurrentStateAsString();
+
+			
 		}
 		return winners;
 	} 
