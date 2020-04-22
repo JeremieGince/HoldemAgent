@@ -9,7 +9,7 @@ namespace game {
 
 	MCTS::MCTS(std::string p_name) : Player(p_name, "MCTS")
 	{
-		m_tree.root.is_not_root = false;
+		m_tree->root->is_not_root = false;
 	}
 
 
@@ -20,53 +20,62 @@ namespace game {
 		for (int i = 0; i < 10; i++) {
 			set_game(p_gameState);
 			simulation_game->doHand(false);
-			Node last_Node;
-			last_Node.is_leaf = true;
-			last_Node.gameState = simulation_game->getState();
-			last_Node.parent = m_tree.slave_last_choice;
-			m_tree.slave_last_choice->children.push_back(&last_Node);
+			Node* last_Node = new Node();
+			last_Node->is_leaf = true;
+			*last_Node->gameState = simulation_game->getState();
+			last_Node->parent = m_tree->slave_last_choice;
+			m_tree->slave_last_choice->children.push_back(last_Node);
 			if (is_decision_sccessful()) {
-				backpropagation_of_probabilities(&last_Node);
+				backpropagation_of_probabilities(last_Node);
 			}
 
 		}
 		float max_success_rate = 0;
 		int iter_of_optimal_choice = -1;
-		for (int i = 0; i < m_tree.root.children.size(); i++)
+		for (int i = 0; i < m_tree->root->children.size(); i++)
 		{
-			float success_rate = (m_tree.root.children[i]->nb_achievements) / (m_tree.root.children[i]->nb_visits);
+			float success_rate = 0.0f;
+			if ((m_tree->root->children[i]->nb_visits) > 0) {
+				success_rate = (m_tree->root->children[i]->nb_achievements) / (m_tree->root->children[i]->nb_visits);
+			}
 			if (success_rate > max_success_rate)
 			{
 				iter_of_optimal_choice = i;
 			}
+			cout << success_rate << endl;
 
 
 		}
-		last_decision_node = m_tree.root.children[iter_of_optimal_choice];
-		return last_decision_node->decision;
+		iter_of_optimal_choice = -1;
+		last_decision_node = m_tree->root->children[iter_of_optimal_choice];
+		return *(last_decision_node->decision);
 	}
 
 	void MCTS::backpropagation_of_probabilities(Node* final_Node)
 	{
-		Node* current_Node = final_Node;
+		Node* current_Node = new Node();
+		*current_Node = *final_Node;
 		while (current_Node->is_not_root)
 		{
-			DecisionNode* parent_decision = current_Node->parent;
+			cout << "im in for wins-----------------------" << endl;
+			DecisionNode* parent_decision = new DecisionNode();
+			parent_decision = current_Node->parent;
 			current_Node->nb_achievements++;
 			parent_decision->nb_achievements++;
-			current_Node = parent_decision->parent;
+			*current_Node = *(parent_decision->parent);
+			cout << current_Node->is_not_root << endl;
 		}
 
 	}
 	void MCTS::initialise_tree(GameState p_gameState)
 	{
-		if (!(m_tree.root.children).empty())
+		if (!(m_tree->root->children).empty())
 		{
 			bool game_state_found = false;
 			Node* node_of_the_game_state;
 			for (int i = 0; i < (last_decision_node->children).size(); i++)
 			{
-				if ((last_decision_node->children)[i]->gameState.board == p_gameState.board)
+				if ((last_decision_node->children)[i]->gameState->board == p_gameState.board)
 				{
 					game_state_found = true;
 					node_of_the_game_state = (last_decision_node->children)[i];
@@ -75,24 +84,25 @@ namespace game {
 			}
 
 			if (game_state_found) {
-				m_tree.root = *node_of_the_game_state;
-				m_tree.root.is_not_root = false;
+				m_tree->root = node_of_the_game_state;
+				m_tree->root->is_not_root = false;
 			}
 			else {
-				Node new_root;
-				new_root.is_not_root = false;
-				new_root.gameState = p_gameState;
-				m_tree.root = new_root;
+				Node* new_root = new Node();
+				new_root->is_not_root = false;
+				*(new_root->gameState) = p_gameState;
+				m_tree->root = new_root;
 			}
 		}
 		else
 		{
-			m_tree.root.gameState = p_gameState;
+			*(m_tree->root->gameState) = p_gameState;
 		}
 	}
 	bool MCTS::is_decision_sccessful()
 	{
-		GameState* finishing_state = &simulation_game->getState();
+		GameState* finishing_state = new GameState();
+		*finishing_state = simulation_game->getState();
 		if ((*finishing_state).winnerIdx == m_playerIdx)
 		{
 			return true;
@@ -134,7 +144,7 @@ namespace game {
 		{
 			if (real_players[i]->getMethod() == "MCTS")
 			{
-				MCTS_dummy_player* slave_player = new MCTS_dummy_player(&m_tree, real_players[i]->getName());
+				MCTS_dummy_player* slave_player = new MCTS_dummy_player(m_tree, real_players[i]->getName());
 				simulated_players.push_back(slave_player);
 
 			}
@@ -180,7 +190,7 @@ namespace game {
 
 	void MCTS::displayTree()
 	{
-		cout << getTreeAsString(&m_tree);
+		cout << getTreeAsString(m_tree);
 	}
 
 }

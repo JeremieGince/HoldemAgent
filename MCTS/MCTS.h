@@ -23,7 +23,7 @@ namespace game {
 
     class MCTS : public Player {
     private:
-        Tree m_tree;
+        Tree* m_tree = new Tree();
         TexasHoldemGame* simulation_game;
         DecisionNode* last_decision_node;
 

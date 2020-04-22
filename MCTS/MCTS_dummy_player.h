@@ -24,7 +24,7 @@ namespace game {
     struct DecisionNode;
 
     struct Node {
-        GameState gameState;
+        GameState* gameState = new GameState();
         float nb_visits = 1;
         float nb_achievements = 0;
         DecisionNode* parent;
@@ -34,7 +34,7 @@ namespace game {
     };
 
     struct DecisionNode {
-        Action decision = Action();
+        Action* decision = new Action();
         float nb_visits = 0;
         float nb_achievements = 0;
         Node* parent = new Node();
@@ -43,15 +43,15 @@ namespace game {
     };
 
     struct Tree {
-        Node root;
-        DecisionNode* slave_last_choice;
+        Node* root = new Node();
+        DecisionNode* slave_last_choice = new DecisionNode();
     };
 
     class MCTS_dummy_player : public Player {
     private:
         Tree* m_tree = new Tree();
         Node* actual_Node = new Node();
-        DecisionNode* actual_DecisionNode;
+        DecisionNode* actual_DecisionNode = new DecisionNode();
 
     public:
         MCTS_dummy_player(Tree* p_tree, std::string p_name);

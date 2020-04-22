@@ -7,13 +7,14 @@ using namespace std;
 namespace game {
 
 
-	MCTS_dummy_player::MCTS_dummy_player(Tree* p_tree, string p_name) : Player(p_name, "MCTS"), m_tree(p_tree), actual_Node(&(p_tree->root))
+	MCTS_dummy_player::MCTS_dummy_player(Tree* p_tree, string p_name) : Player(p_name, "MCTS"), m_tree(p_tree), actual_Node(p_tree->root)
 	{
 	}
 
 
 	Action MCTS_dummy_player::getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions)
 	{
+		cout << "in action" << endl;
 		int iter = 0;
 		float maximiser = 0;
 		float value;
@@ -32,32 +33,52 @@ namespace game {
 				iter = i;
 			}
 		}
-		chosen_action = (*possible_decisions)[iter]->decision;
+		chosen_action = *((*possible_decisions)[iter]->decision);
 		m_tree->slave_last_choice = (*possible_decisions)[iter];
+		actual_DecisionNode = (*possible_decisions)[iter];
+		actual_DecisionNode->nb_visits++;
 		return chosen_action;
 	}
 
 	void MCTS_dummy_player::create_new_Node(GameState p_gameState)
 	{
-		if (p_gameState.board != actual_Node->gameState.board)
+		if (p_gameState.board != actual_Node->gameState->board)
 		{
-			bool not_found = true;
-			std::vector<Node*> children = actual_DecisionNode->children;
-			for (int i = 0; i < children.size(); i++)
-				if ((actual_DecisionNode->children)[i]->gameState.board == p_gameState.board)
+
+			if (!(actual_DecisionNode->children.empty()))
+			{
+				bool not_found = true;
+				std::vector<Node*> children = actual_DecisionNode->children;
+				for (int i = 0; i < actual_DecisionNode->children.size(); i++)
+					if ((actual_DecisionNode->children)[i]->gameState->board == p_gameState.board)
+					{
+						cout << "condition_de_marde" << endl;
+						actual_Node = (actual_DecisionNode->children)[i];
+						(actual_Node->nb_visits)++;
+						not_found = false;
+					}
+
+				if (not_found)
 				{
-					actual_Node = (actual_DecisionNode->children)[i];
-					(actual_Node->nb_visits)++;
-					not_found = false;
+					Node* new_node = new Node();
+					*(new_node->gameState) = p_gameState;
+					DecisionNode* node_parent = new DecisionNode();
+					node_parent = actual_DecisionNode;
+					new_node->parent = node_parent;
+					(actual_DecisionNode->children).push_back(new_node);
+
 				}
 
-			if (not_found) 
+			}
+			else
 			{
 				Node* new_node = new Node();
-				new_node->gameState = p_gameState;
+				*(new_node->gameState) = p_gameState;
+				new_node->parent = actual_DecisionNode;
 				(actual_DecisionNode->children).push_back(new_node);
-
+				actual_Node = new_node;
 			}
+
 			
 
 		}
@@ -73,7 +94,7 @@ namespace game {
 				possible_action->actionType = p_possible_actions[i];
 				DecisionNode* new_decision_node = new DecisionNode();
 				new_decision_node->parent = actual_Node;
-				new_decision_node->decision = *possible_action;
+				new_decision_node->decision = possible_action;
 				(actual_Node->children).push_back(new_decision_node);
 
 			}
