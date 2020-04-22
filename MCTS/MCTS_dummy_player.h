@@ -25,7 +25,7 @@ namespace game {
 
     struct Node {
         GameState* gameState = new GameState();
-        float nb_visits = 1;
+        float nb_visits = 0;
         float nb_achievements = 0;
         DecisionNode* parent;
         std::vector<DecisionNode*> children = std::vector<DecisionNode*>();
@@ -39,7 +39,6 @@ namespace game {
         float nb_achievements = 0;
         Node* parent = new Node();
         std::vector<Node*> children = std::vector<Node*>();
-        bool is_leaf = false;
     };
 
     struct Tree {
@@ -52,6 +51,9 @@ namespace game {
         Tree* m_tree = new Tree();
         Node* actual_Node = new Node();
         DecisionNode* actual_DecisionNode = new DecisionNode();
+        DecisionNode* last_decision_node_of_simulation;
+        bool root_initialised = false;
+        bool first_gameState = true;
 
     public:
         MCTS_dummy_player(Tree* p_tree, std::string p_name);
@@ -59,6 +61,7 @@ namespace game {
         virtual Action getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions);
         void update_decisions_of_Node(std::vector<ActionType> p_possible_actions);
         void create_new_Node(GameState p_gameState);
+        virtual void reset();
 
     };
 

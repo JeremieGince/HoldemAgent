@@ -9,25 +9,18 @@ namespace game {
 
 	MCTS::MCTS(std::string p_name) : Player(p_name, "MCTS")
 	{
-		m_tree->root->is_not_root = false;
 	}
 
 
 	Action MCTS::getAction(GameState p_gameState, vector<ActionType> p_possibleActions)
 	{
-
 		create_game_from_state(p_gameState);
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 1; i++) {
 			set_game(p_gameState);
-			simulation_game->doHand(false);
-			Node* last_Node = new Node();
-			last_Node->is_leaf = true;
-			*last_Node->gameState = simulation_game->getState();
-			last_Node->parent = m_tree->slave_last_choice;
-			m_tree->slave_last_choice->children.push_back(last_Node);
-			if (is_decision_sccessful()) {
-				backpropagation_of_probabilities(last_Node);
-			}
+			simulation_game->doHand(true);
+			Node* last_Node = manage_leafs(&p_gameState);
+			backpropagation_of_probabilities(last_Node);
+
 
 		}
 		float max_success_rate = 0;
@@ -42,62 +35,65 @@ namespace game {
 			{
 				iter_of_optimal_choice = i;
 			}
-			cout << success_rate << endl;
 
 
 		}
-		iter_of_optimal_choice = -1;
 		last_decision_node = m_tree->root->children[iter_of_optimal_choice];
 		return *(last_decision_node->decision);
+	}
+	Node* MCTS::manage_leafs(GameState* p_gamestate) {
+
+		Node* last_Node = new Node();
+		if (!(m_tree->slave_last_choice->children.empty()))
+		{
+			bool not_found = true;
+			for (int i = 0; i < m_tree->slave_last_choice->children.size(); i++)
+				if (m_tree->slave_last_choice->children[i]->gameState->board == p_gamestate->board)
+				{
+					last_Node = m_tree->slave_last_choice->children[i];
+					not_found = false;
+				}
+
+			if (not_found)
+			{
+				last_Node->parent = m_tree->slave_last_choice;
+				last_Node->is_leaf = true;
+				m_tree->slave_last_choice->children.push_back(last_Node);
+
+			}
+
+		}
+		else
+		{
+			last_Node->parent = m_tree->slave_last_choice;
+			last_Node->is_leaf = true;
+			m_tree->slave_last_choice->children.push_back(last_Node);
+		}
+		return last_Node;
+
 	}
 
 	void MCTS::backpropagation_of_probabilities(Node* final_Node)
 	{
-		Node* current_Node = new Node();
-		*current_Node = *final_Node;
+		bool success = is_decision_sccessful();
+		Node* current_Node = final_Node;
 		while (current_Node->is_not_root)
 		{
-			cout << "im in for wins-----------------------" << endl;
-			DecisionNode* parent_decision = new DecisionNode();
-			parent_decision = current_Node->parent;
-			current_Node->nb_achievements++;
-			parent_decision->nb_achievements++;
-			*current_Node = *(parent_decision->parent);
-			cout << current_Node->is_not_root << endl;
-		}
-
-	}
-	void MCTS::initialise_tree(GameState p_gameState)
-	{
-		if (!(m_tree->root->children).empty())
-		{
-			bool game_state_found = false;
-			Node* node_of_the_game_state;
-			for (int i = 0; i < (last_decision_node->children).size(); i++)
+			if (success)
 			{
-				if ((last_decision_node->children)[i]->gameState->board == p_gameState.board)
-				{
-					game_state_found = true;
-					node_of_the_game_state = (last_decision_node->children)[i];
-				}
-
+				current_Node->nb_achievements++;
+				current_Node->parent->nb_achievements++;
 			}
-
-			if (game_state_found) {
-				m_tree->root = node_of_the_game_state;
-				m_tree->root->is_not_root = false;
-			}
-			else {
-				Node* new_root = new Node();
-				new_root->is_not_root = false;
-				*(new_root->gameState) = p_gameState;
-				m_tree->root = new_root;
-			}
+			current_Node->nb_visits++;
+			current_Node->parent->nb_visits++;
+			current_Node = current_Node->parent->parent;
 		}
-		else
+		if (success)
 		{
-			*(m_tree->root->gameState) = p_gameState;
+			current_Node->nb_achievements++;
 		}
+		current_Node->nb_visits++;
+
 	}
 	bool MCTS::is_decision_sccessful()
 	{
@@ -133,7 +129,6 @@ namespace game {
 
 	void MCTS::create_game_from_state(GameState p_gameState)
 	{
-		initialise_tree(p_gameState);
 		vector<Player*> simulation_players = regenarate_players(p_gameState.players);
 		simulation_game = new TexasHoldemGame(simulation_players, 10);
 	}
@@ -191,6 +186,10 @@ namespace game {
 	void MCTS::displayTree()
 	{
 		cout << getTreeAsString(m_tree);
+	}
+	void MCTS::reset() {
+		Tree* m_tree = new Tree();
+		DecisionNode* last_Decision_Node = new DecisionNode();
 	}
 
 }
