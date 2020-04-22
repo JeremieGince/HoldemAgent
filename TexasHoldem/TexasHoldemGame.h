@@ -38,8 +38,8 @@ namespace game {
 
     struct GameState {
         int iteration = 0;
-        std::vector<Player*> players;
-        std::vector<Card> board;
+        std::vector<Player*> players = std::vector<Player*>();
+        std::vector<Card> board = std::vector<Card>();
         int currentBet = 0;
         bool currentCheck = true;
         CardStack* cardStack;

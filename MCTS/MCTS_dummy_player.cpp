@@ -14,7 +14,7 @@ namespace game {
 
 	Action MCTS_dummy_player::getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions)
 	{
-		int iter;
+		int iter = 0;
 		float maximiser = 0;
 		float value;
 		Action chosen_action;
@@ -42,7 +42,8 @@ namespace game {
 		if (p_gameState.board != actual_Node->gameState.board)
 		{
 			bool not_found = true;
-			for (int i = 0; i < (actual_DecisionNode->children).size(); i++)
+			std::vector<Node*> children = actual_DecisionNode->children;
+			for (int i = 0; i < children.size(); i++)
 				if ((actual_DecisionNode->children)[i]->gameState.board == p_gameState.board)
 				{
 					actual_Node = (actual_DecisionNode->children)[i];
@@ -52,9 +53,9 @@ namespace game {
 
 			if (not_found) 
 			{
-				Node new_node;
-				new_node.gameState = p_gameState;
-				(actual_DecisionNode->children).push_back(&new_node);
+				Node* new_node = new Node();
+				new_node->gameState = p_gameState;
+				(actual_DecisionNode->children).push_back(new_node);
 
 			}
 			
@@ -68,12 +69,12 @@ namespace game {
 		{
 			for (int i = 0; i < p_possible_actions.size(); i++)
 			{
-				Action possible_action;
-				possible_action.actionType = p_possible_actions[i];
-				DecisionNode new_decision_node;
-				new_decision_node.parent = actual_Node;
-				new_decision_node.decision = possible_action;
-				(actual_Node->children).push_back(&new_decision_node);
+				Action* possible_action = new Action();
+				possible_action->actionType = p_possible_actions[i];
+				DecisionNode* new_decision_node = new DecisionNode();
+				new_decision_node->parent = actual_Node;
+				new_decision_node->decision = *possible_action;
+				(actual_Node->children).push_back(new_decision_node);
 
 			}
 

@@ -19,10 +19,10 @@ namespace game {
 		create_game_from_state(p_gameState);
 		for (int i = 0; i < 10; i++) {
 			set_game(p_gameState);
-			simulation_game.doHand(false);
+			simulation_game->doHand(false);
 			Node last_Node;
 			last_Node.is_leaf = true;
-			last_Node.gameState = simulation_game.getState();
+			last_Node.gameState = simulation_game->getState();
 			last_Node.parent = m_tree.slave_last_choice;
 			m_tree.slave_last_choice->children.push_back(&last_Node);
 			if (is_decision_sccessful()) {
@@ -92,7 +92,7 @@ namespace game {
 	}
 	bool MCTS::is_decision_sccessful()
 	{
-		GameState* finishing_state = &simulation_game.getState();
+		GameState* finishing_state = &simulation_game->getState();
 		if ((*finishing_state).winnerIdx == m_playerIdx)
 		{
 			return true;
@@ -111,21 +111,21 @@ namespace game {
 
 	void MCTS::set_game(GameState p_gameState)
 	{
-		vector<Card>* new_board = new vector<Card>;
+		vector<Card>* new_board = new vector<Card>();
 		for (int i = 0; i < p_gameState.board.size(); i++)
 			new_board->push_back(*((p_gameState.board[i])).copy());
-		vector<Card>* hand_cards = new vector<Card>;
+		vector<Card>* hand_cards = new vector<Card>();
 		for (int i = 0; i < getCards().size(); i++)
 			hand_cards->push_back(*((getCards()[i])).copy());
 		map<int, vector<Card>>* card_set = new map<int, vector<Card>>({ {-1, *new_board}, {m_playerIdx, *hand_cards} });
-		simulation_game.setStartingCards(*card_set);
+		simulation_game->setStartingCards(*card_set);
 	}
 
 	void MCTS::create_game_from_state(GameState p_gameState)
 	{
 		initialise_tree(p_gameState);
 		vector<Player*> simulation_players = regenarate_players(p_gameState.players);
-		simulation_game = TexasHoldemGame(simulation_players, 10);
+		simulation_game = new TexasHoldemGame(simulation_players, 10);
 	}
 	vector<Player*> MCTS::regenarate_players(vector<Player*> real_players)
 	{

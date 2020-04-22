@@ -88,6 +88,7 @@ namespace game {
 
 	void TexasHoldemGame::setStartingCards(std::map<int, std::vector<Card>>p_cardsToSet)
 	{
+		reset();
 		std::map<int, std::vector<Card>>::iterator mapIt;
 		vector<int> dontTuchIdx;
 
@@ -120,7 +121,11 @@ namespace game {
 			if (!m_currentGameState.players[i]->m_playerState.active) continue;
 
 			if (activePlayers.size() == 0 && i == (m_currentGameState.players.size() - 1)) break;
-			Action playerAction = m_currentGameState.players[i]->getAction(m_currentGameState, getPossibleActions(m_currentGameState.players[i]->m_playerState, m_currentGameState));
+			vector<ActionType> possibleActions = getPossibleActions(m_currentGameState.players[i]->m_playerState, m_currentGameState);
+
+			if (possibleActions.size() == 0) continue;
+
+			Action playerAction = m_currentGameState.players[i]->getAction(m_currentGameState, possibleActions);
 
 			if (playerAction.actionType == CHECK) playerIdxOnCheck.push_back(i);
 
@@ -136,7 +141,11 @@ namespace game {
 
 				if (activePlayers.size() == 0 && i == (playerIdxOnCheck.size() - 1)) break;
 
-				Action playerAction = m_currentGameState.players[idx]->getAction(m_currentGameState, getPossibleActions(m_currentGameState.players[idx]->m_playerState, m_currentGameState));
+				vector<ActionType> possibleActions = getPossibleActions(m_currentGameState.players[i]->m_playerState, m_currentGameState);
+
+				if (possibleActions.size() == 0) continue;
+
+				Action playerAction = m_currentGameState.players[idx]->getAction(m_currentGameState, possibleActions);
 				applyActionOnPlayer(m_currentGameState.players[idx], playerAction);
 				if(!m_currentGameState.players[i]->m_playerState.active) activePlayers.erase(remove(activePlayers.begin(), activePlayers.end(), idx), activePlayers.end());
 			}
@@ -700,12 +709,16 @@ namespace game {
 
 	void TexasHoldemGame::setBoard(std::vector<Card> p_board)
 	{
-		ASSERTION(p_board.size() >= 3 && p_board.size() <= 5 && p_board.size() == m_currentGameState.board.size());
+		ASSERTION(p_board.size() >= 3 && p_board.size() <= 5);
 		for (int i = 0; i < p_board.size(); i++)
 		{
 			m_cardStack.removeFromStack(p_board[i]);
+		}
+		for (int i = 0; i < m_currentGameState.board.size(); i++)
+		{
 			m_cardStack.putInTheStack(m_currentGameState.board[i]);
 		}
+		m_currentGameState.iteration = p_board.size() - 1;
 		m_currentGameState.board = p_board;
 
 	}
@@ -716,6 +729,10 @@ namespace game {
 		for (int i = 0; i < p_hand.size(); i++)
 		{
 			m_cardStack.removeFromStack(p_hand[i]);
+		}
+		cout << to_string(m_currentGameState.players.size());
+		for (size_t i = 0; i < m_currentGameState.players[p_playerIdx]->getCards().size(); i++)
+		{
 			m_cardStack.putInTheStack(m_currentGameState.players[p_playerIdx]->getCards()[i]);
 		}
 		m_currentGameState.players[p_playerIdx]->setCards(p_hand);

@@ -28,17 +28,17 @@ namespace game {
         float nb_visits = 1;
         float nb_achievements = 0;
         DecisionNode* parent;
-        std::vector<DecisionNode*> children;
+        std::vector<DecisionNode*> children = std::vector<DecisionNode*>();
         bool is_leaf = false;
         bool is_not_root = true;
     };
 
     struct DecisionNode {
-        Action decision;
+        Action decision = Action();
         float nb_visits = 0;
         float nb_achievements = 0;
-        Node* parent;
-        std::vector<Node*> children;
+        Node* parent = new Node();
+        std::vector<Node*> children = std::vector<Node*>();
         bool is_leaf = false;
     };
 
@@ -49,8 +49,8 @@ namespace game {
 
     class MCTS_dummy_player : public Player {
     private:
-        Tree* m_tree;
-        Node* actual_Node;
+        Tree* m_tree = new Tree();
+        Node* actual_Node = new Node();
         DecisionNode* actual_DecisionNode;
 
     public:

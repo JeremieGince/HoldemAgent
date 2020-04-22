@@ -24,7 +24,7 @@ namespace game {
     class MCTS : public Player {
     private:
         Tree m_tree;
-        TexasHoldemGame simulation_game;
+        TexasHoldemGame* simulation_game;
         DecisionNode* last_decision_node;
 
 
