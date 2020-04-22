@@ -21,7 +21,7 @@ namespace game {
     private:
         Asset m_asset;
         CardNumber m_number;
-        int id;
+        int m_id;
 
     public:
         Card(Asset p_asset, CardNumber p_number);
@@ -35,6 +35,7 @@ namespace game {
         int GetId() const;
 
         friend bool operator==(const Card& p_lCard, const Card& p_rCard);
+        friend bool operator!=(const Card& p_lCard, const Card& p_rCard);
 
         static const int minNumber = TWO;
         static const int maxNumber = ACE;

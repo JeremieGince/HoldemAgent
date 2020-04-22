@@ -24,6 +24,8 @@ namespace game{
 
 		void shuffle();
 
+		bool isInStack(Card p_card);
+
 	};
 
 }

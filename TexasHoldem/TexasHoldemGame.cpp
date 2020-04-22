@@ -62,13 +62,16 @@ namespace game {
 		/*
 		idx = -1 -> board
 		*/
-		m_cardStack.reset();
+		m_cardStack.shuffle();
 
 		vector<Card> board = vector<Card>();
 
 		if (find(p_dontTuchIdx.begin(), p_dontTuchIdx.end(), -1) == p_dontTuchIdx.end()) {
 			for (int i = 0; i < 3; i++) {
-				board.push_back(m_cardStack.getCard());
+
+				Card card = m_cardStack.getCard();
+				board.push_back(card);
+				ASSERTION(!m_cardStack.isInStack(card));
 			}
 			m_currentGameState.board = board;
 		}
@@ -81,6 +84,7 @@ namespace game {
 				{
 					Card card = m_cardStack.getCard();
 					hand.push_back(card);
+					ASSERTION(!m_cardStack.isInStack(card));
 				}
 				m_currentGameState.players[i]->setCards(hand);
 				m_currentGameState.players[i]->m_playerIdx = i;
@@ -146,7 +150,7 @@ namespace game {
 
 				if (activePlayers.size() == 0 && i == (playerIdxOnCheck.size() - 1)) break;
 
-				cout << "player " + m_currentGameState.players[i]->getName() + " make an action cause he was on cjeck" << endl;
+				cout << "player " + m_currentGameState.players[i]->getName() + " make an action cause he was on check" << endl;
 				vector<ActionType> possibleActions = getPossibleActions(m_currentGameState.players[i]->m_playerState, m_currentGameState);
 
 				if (possibleActions.size() == 0) continue;
@@ -718,13 +722,14 @@ namespace game {
 	void TexasHoldemGame::setBoard(std::vector<Card> p_board)
 	{
 		ASSERTION(p_board.size() >= 3 && p_board.size() <= 5);
-		for (int i = 0; i < p_board.size(); i++)
-		{
-			m_cardStack.removeFromStack(p_board[i]);
-		}
 		for (int i = 0; i < m_currentGameState.board.size(); i++)
 		{
 			m_cardStack.putInTheStack(m_currentGameState.board[i]);
+		}
+		for (int i = 0; i < p_board.size(); i++)
+		{
+			m_cardStack.removeFromStack(p_board[i]);
+			ASSERTION(!m_cardStack.isInStack(p_board[i]));
 		}
 		m_currentGameState.iteration = p_board.size() - 2;
 		m_currentGameState.board = p_board;
@@ -734,15 +739,16 @@ namespace game {
 	void TexasHoldemGame::setPlayerHand(std::vector<Card> p_hand, int p_playerIdx)
 	{
 		ASSERTION(p_hand.size() == 2);
-		for (int i = 0; i < p_hand.size(); i++)
-		{
-			m_cardStack.removeFromStack(p_hand[i]);
-		}
-		cout << to_string(m_currentGameState.players.size());
-		for (size_t i = 0; i < m_currentGameState.players[p_playerIdx]->getCards().size(); i++)
+		for (int i = 0; i < m_currentGameState.players[p_playerIdx]->getCards().size(); i++)
 		{
 			m_cardStack.putInTheStack(m_currentGameState.players[p_playerIdx]->getCards()[i]);
 		}
+		for (int i = 0; i < p_hand.size(); i++)
+		{
+			m_cardStack.removeFromStack(p_hand[i]);
+			ASSERTION(!m_cardStack.isInStack(p_hand[i]));
+		}
+		
 		m_currentGameState.players[p_playerIdx]->setCards(p_hand);
 	}
 
@@ -815,40 +821,40 @@ namespace game {
 
 	string TexasHoldemGame::getCurrentStateAsString() {
 		string out = "\n";
-		out += "iteration: " + to_string(m_currentGameState.iteration) + "\n\n";
+		out += "iteration: " + to_string(m_currentGameState.iteration) + " \n \n ";
 
 		out += "Board: ";
-		for each (Card card in m_currentGameState.board)
+		for(int card_idx = 0; card_idx < m_currentGameState.board.size(); card_idx++)
 		{
-			out += card.asString() + " - ";
+			out += m_currentGameState.board[card_idx].asString() + " - ";
 		}
 		out += "\n";
-		out += "Current bet: " + to_string(m_currentGameState.currentBet) + " current check: " + to_string(m_currentGameState.currentCheck) + "\n";
+		out += "Current bet: " + to_string(m_currentGameState.currentBet) + " current check: " + to_string(m_currentGameState.currentCheck) + " \n ";
 
-		out += "--- Players: \n \n";
+		out += "--- Players: \n \n ";
 		for (int i = 0; i < m_currentGameState.players.size(); i++)
 		{
-			out += m_currentGameState.players[i]->getName() + " - " + m_currentGameState.players[i]->getMethod() + "\n";
+			out += m_currentGameState.players[i]->getName() + " - " + m_currentGameState.players[i]->getMethod() + " \n ";
 			out += "Cards: ";
-			for each (Card card in m_currentGameState.players[i]->getCards())
+			for (int card_idx = 0; card_idx < m_currentGameState.players[i]->getCards().size(); card_idx++)
 			{
-				out += card.asString() + " - ";
+				out += m_currentGameState.players[i]->getCards()[card_idx].asString() + " - ";
 			}
 			out += "\n";
-			out += "Active: " + to_string(m_currentGameState.players[i]->m_playerState.active) + "\n";
+			out += "Active: " + to_string(m_currentGameState.players[i]->m_playerState.active) + " \n ";
 			out += "Bank: " + to_string(m_currentGameState.players[i]->m_playerState.bank) + " bet: " 
 				+ to_string(m_currentGameState.players[i]->m_playerState.bet) 
-				+ " raise: " + to_string(m_currentGameState.players[i]->m_playerState.raise) + "\n";
-			out += "Current reward: " + to_string(getReward(m_currentGameState.players[i]->getCards())) + "\n";
-			out += "--- \n";
+				+ " raise: " + to_string(m_currentGameState.players[i]->m_playerState.raise) + " \n ";
+			out += "Current reward: " + to_string(getReward(m_currentGameState.players[i]->getCards())) + " \n ";
+			out += "--- \n ";
 		}
 
 		if (m_currentGameState.terminal) {
-			out += "Winner: " + m_currentGameState.players[m_currentGameState.winnerIdx]->getName() + " - " + m_currentGameState.players[m_currentGameState.winnerIdx]->getMethod() + "\n";
-			out += "Expected Winner: " + m_currentGameState.players[m_currentGameState.expectedWinnerIdx]->getName() + " - " + m_currentGameState.players[m_currentGameState.expectedWinnerIdx]->getMethod() + "\n";
+			out += "Winner: " + m_currentGameState.players[m_currentGameState.winnerIdx]->getName() + " - " + m_currentGameState.players[m_currentGameState.winnerIdx]->getMethod() + " \n ";
+			out += "Expected Winner: " + m_currentGameState.players[m_currentGameState.expectedWinnerIdx]->getName() + " - " + m_currentGameState.players[m_currentGameState.expectedWinnerIdx]->getMethod() + " \n ";
 		}
 
-		out += "\n\n\n";
+		out += "\n \n \n";
 
 		return out;
 	}

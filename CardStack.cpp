@@ -22,7 +22,7 @@ namespace game {
 		m_cardStack = std::stack<Card>();
 		vector<Card> cards;
 
-		for (int assetInt = CLUBS; assetInt != DIAMONDS; assetInt++)
+		for (int assetInt = CLUBS; assetInt <= HEART; assetInt++)
 		{
 			Asset asset = static_cast<Asset>(assetInt);
 			for (int i = Card::minNumber; i <= Card::maxNumber; i++)
@@ -35,9 +35,10 @@ namespace game {
 
 		std::random_shuffle(cards.begin(), cards.end());
 
-		for each (Card card in cards)
+		for(int i = 0; i < cards.size(); i++)
 		{
-			m_cardStack.push(card);
+			ASSERTION(!isInStack(cards[i]));
+			m_cardStack.push(cards[i]);
 		}
 	}
 
@@ -49,7 +50,7 @@ namespace game {
 			Card card = m_cardStack.top();
 			m_cardStack.pop();
 
-			if (card.GetId() != p_card.GetId()) {
+			if (card != p_card) {
 				tempStack.push(card);
 			}
 		}
@@ -66,8 +67,11 @@ namespace game {
 
 	void CardStack::putInTheStack(Card p_card)
 	{
-		m_cardStack.push(p_card);
-		shuffle();
+		if (!isInStack(p_card)) {
+			m_cardStack.push(p_card);
+			shuffle();
+		}
+		
 	}
 
 	void CardStack::shuffle()
@@ -83,11 +87,39 @@ namespace game {
 
 		std::random_shuffle(cards.begin(), cards.end());
 
-		for each (Card card in cards)
+		for (int i = 0; i < cards.size(); i++)
 		{
+			m_cardStack.push(cards[i]);
+		}
+
+	}
+
+	bool CardStack::isInStack(Card p_card)
+	{
+		bool inStack = false;
+
+		std::stack<Card> tempStack = std::stack<Card>();
+		while (!m_cardStack.empty())
+		{
+			Card card = m_cardStack.top();
+			m_cardStack.pop();
+
+			if (card == p_card) {
+				inStack = true;
+			}
+			tempStack.push(card);
+		}
+
+		while (!tempStack.empty())
+		{
+			Card card = tempStack.top();
+			tempStack.pop();
+
 			m_cardStack.push(card);
 		}
 
+
+		return inStack;
 	}
 
 

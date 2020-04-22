@@ -32,11 +32,11 @@ namespace game {
         //PRECONDITION(0 < p_number);
         //PRECONDITION(p_number < 14);
 
-        id = Card::GetId(p_asset, p_number);
+        m_id = Card::GetId(p_asset, p_number);
         
         POSTCONDITION(m_asset == p_asset);
         POSTCONDITION(m_number == p_number);
-        POSTCONDITION(id == p_number * Asset(p_asset))
+        POSTCONDITION(m_id == p_number + Asset(p_asset) * (maxNumber + 1))
         
     }
 
@@ -72,14 +72,15 @@ namespace game {
 
     int Card::GetId(Asset p_asset, int p_number)
     {
-        return p_number * Asset(p_asset);
+        return p_number + Asset(p_asset)*(maxNumber + 1) ;
     }
+
 
     int Card::GetId() const {
-        return id;
+        return m_id;
     }
 
-    string Card::assetAsString(Asset p_asset) {
+    std::string Card::assetAsString(Asset p_asset) {
         string assetStr = "";
         switch (p_asset)
         {
@@ -93,7 +94,7 @@ namespace game {
             assetStr = "Spades";
             break;
         case game::DIAMONDS:
-            assetStr = "Diamonds";
+            assetStr = "Diamond";
             break;
         default:
             break;
@@ -159,7 +160,11 @@ namespace game {
 
 	bool operator==(const Card& p_lCard, const Card& p_rCard)
 	{
-		return p_lCard.GetId() == p_rCard.GetId();
+		return p_lCard.m_id == p_rCard.m_id;
 	}
+    bool operator!=(const Card& p_lCard, const Card& p_rCard)
+    {
+        return p_lCard.m_id != p_rCard.m_id;
+    }
 }
 
