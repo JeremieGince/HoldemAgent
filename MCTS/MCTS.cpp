@@ -111,10 +111,14 @@ namespace game {
 
 	void MCTS::set_game(GameState p_gameState)
 	{
-		vector<Card> board = p_gameState.board;
-		vector<Card> hand_cards = getCards();
-		map<int, vector<Card>> card_set = { {-1, board}, {m_playerIdx, hand_cards} };
-		simulation_game.setStartingCards(card_set);
+		vector<Card>* new_board = new vector<Card>;
+		for (int i = 0; i < p_gameState.board.size(); i++)
+			new_board->push_back(*((p_gameState.board[i])).copy());
+		vector<Card>* hand_cards = new vector<Card>;
+		for (int i = 0; i < getCards().size(); i++)
+			hand_cards->push_back(*((getCards()[i])).copy());
+		map<int, vector<Card>>* card_set = new map<int, vector<Card>>({ {-1, *new_board}, {m_playerIdx, *hand_cards} });
+		simulation_game.setStartingCards(*card_set);
 	}
 
 	void MCTS::create_game_from_state(GameState p_gameState)
