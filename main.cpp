@@ -159,8 +159,8 @@ int main(void) {
 	MCTS mcts_agent = MCTS("mcts");
 
 	//vector<Player*> players{ &player_rn0, &player_rn1, &player_rn2, &player_rn3, &player_base0, &player_base1, &player_base2, &player_base3 };
-	vector<Player*> players{&mcts_agent, &player_base0 };
-	//vector<Player*> players{ &player_base0, &player_base1 };
+	//vector<Player*> players{&mcts_agent, &player_base0 };
+	vector<Player*> players{ &player_base0, &player_base1 };
 	//vector<Player*> players{ &player_base0, &player_base1, &player_base2 };
 
 
@@ -170,7 +170,12 @@ int main(void) {
 
 	game.start();
 
-	game.doHands(true, 1);
+	game.setStartingCards(map<int, vector<Card>>{
+		{-1, vector<Card>({ Card(SPADES, NINE), Card(SPADES, SIX), Card(SPADES, EIGHT) }) },
+		{ 0, vector<Card>({Card(CLUBS, TWO), Card(SPADES, ACE)}) }
+	});
+
+	game.doHand(true);
 
 	cout << game.getWinsStatsAsString() << endl;
 
