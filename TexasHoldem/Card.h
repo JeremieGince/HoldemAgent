@@ -31,7 +31,7 @@ namespace game {
         const Asset& reqAsset() const;
         const CardNumber& reqNumber() const;
         void  verifyInvariant() const;
-        const std::string& asString() const;
+        std::string asString();
         int GetId() const;
 
         friend bool operator==(const Card& p_lCard, const Card& p_rCard);
