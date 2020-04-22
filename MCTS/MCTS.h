@@ -31,9 +31,8 @@ namespace game {
         void backpropagation_of_probabilities(Node* final_Node);
         void create_game_from_state(GameState p_gameState);
         std::vector<Player*> regenarate_players(std::vector<Player*> real_players);
-        void initialise_tree(GameState p_gameState);
         void set_game(GameState p_gameState);
-        void simulate_game();
+        Node* manage_leafs(GameState* p_gamestate);
         bool is_decision_sccessful();
 
         
@@ -46,6 +45,7 @@ namespace game {
         std::string getDecisionNodeAsString(DecisionNode* p_dNode);
         std::string getTreeAsString(Tree* p_tree);
         void displayTree();
+        virtual void reset();
     };
 
 }

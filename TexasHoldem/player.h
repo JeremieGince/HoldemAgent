@@ -3,8 +3,8 @@
  * \brief Prototype of player class
  * \author Samuel Ouellet (111 233 977)
  */
-#ifndef POKER_MONTE_CARLO_PLAYER_H
-#define POKER_MONTE_CARLO_PLAYER_H
+#ifndef PLAYER_H
+#define PLAYER_H
 
 #include <iostream> 
 #include <vector>
@@ -55,4 +55,4 @@ namespace game {
         std::string getMethod();
     };
 }
-#endif //POKER_MONTE_CARLO_PLAYER_H
+#endif //PLAYER_H

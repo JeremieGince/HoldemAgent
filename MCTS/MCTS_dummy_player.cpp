@@ -14,7 +14,6 @@ namespace game {
 
 	Action MCTS_dummy_player::getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions)
 	{
-		cout << "in action" << endl;
 		int iter = 0;
 		float maximiser = 0;
 		float value;
@@ -23,10 +22,16 @@ namespace game {
 		update_decisions_of_Node(p_possibleActions);
 	    vector<DecisionNode*>* possible_decisions = &(actual_Node->children);
 		for (int i = 0; i < possible_decisions->size(); i++)
-		{
+		{	
 			float nb_win = (*possible_decisions)[i]->nb_achievements;
 			float nb_visits = (*possible_decisions)[i]->nb_visits;
-			value = (nb_win / nb_visits) + sqrt(2 * log((actual_Node->nb_visits)) / nb_visits);
+
+			if (nb_visits > 0.0f) {
+				value = (nb_win / nb_visits) + sqrt(2 * log((actual_Node->nb_visits)+1)/ nb_visits);
+			}
+			else {
+				value = 99999999999.0f;
+			}
 			if (value > maximiser)
 			{
 				maximiser = value;
@@ -36,50 +41,54 @@ namespace game {
 		chosen_action = *((*possible_decisions)[iter]->decision);
 		m_tree->slave_last_choice = (*possible_decisions)[iter];
 		actual_DecisionNode = (*possible_decisions)[iter];
-		actual_DecisionNode->nb_visits++;
 		return chosen_action;
 	}
 
 	void MCTS_dummy_player::create_new_Node(GameState p_gameState)
 	{
-		if (p_gameState.board != actual_Node->gameState->board)
+		if (!(actual_DecisionNode->children.empty()))
 		{
-
-			if (!(actual_DecisionNode->children.empty()))
-			{
-				bool not_found = true;
-				std::vector<Node*> children = actual_DecisionNode->children;
-				for (int i = 0; i < actual_DecisionNode->children.size(); i++)
-					if ((actual_DecisionNode->children)[i]->gameState->board == p_gameState.board)
-					{
-						cout << "condition_de_marde" << endl;
-						actual_Node = (actual_DecisionNode->children)[i];
-						(actual_Node->nb_visits)++;
-						not_found = false;
-					}
-
-				if (not_found)
+			bool not_found = true;
+			std::vector<Node*> children = actual_DecisionNode->children;
+			for (int i = 0; i < actual_DecisionNode->children.size(); i++)
+				if ((actual_DecisionNode->children)[i]->gameState->board == p_gameState.board)
 				{
-					Node* new_node = new Node();
-					*(new_node->gameState) = p_gameState;
-					DecisionNode* node_parent = new DecisionNode();
-					node_parent = actual_DecisionNode;
-					new_node->parent = node_parent;
-					(actual_DecisionNode->children).push_back(new_node);
-
+					actual_Node = (actual_DecisionNode->children)[i];
+					not_found = false;
 				}
 
-			}
-			else
+			if (not_found)
 			{
 				Node* new_node = new Node();
 				*(new_node->gameState) = p_gameState;
 				new_node->parent = actual_DecisionNode;
 				(actual_DecisionNode->children).push_back(new_node);
 				actual_Node = new_node;
+
 			}
 
+		}
+		else
+		{
 			
+			if (!root_initialised) 
+			{
+				m_tree->root->is_not_root = false;
+				*(m_tree->root->gameState) = p_gameState;
+				root_initialised = true;
+				first_gameState = false;
+
+			}
+			else if (first_gameState) {
+				first_gameState = false;
+			}
+			else {
+				Node* new_node = new Node();
+				*(new_node->gameState) = p_gameState;
+				new_node->parent = actual_DecisionNode;
+				(actual_DecisionNode->children).push_back(new_node);
+				actual_Node = new_node;
+			}
 
 		}
 		
@@ -101,6 +110,14 @@ namespace game {
 
 		}
 
+
+	}
+	void MCTS_dummy_player::reset()
+	{
+		actual_Node = m_tree->root;
+		DecisionNode* actual_Decision_Node = new DecisionNode();
+		actual_DecisionNode = actual_Decision_Node;
+		first_gameState = true;
 	}
 
 }
