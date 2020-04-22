@@ -56,8 +56,6 @@ namespace game {
 		{
 			m_players[i]->reset();
 		}
-
-		m_currentGameState.iteration = 0;
 	}
 
 	void TexasHoldemGame::redistributeCards(std::vector<int> p_dontTuchIdx) {
@@ -128,13 +126,15 @@ namespace game {
 			if (activePlayers.size() == 0 && i == (m_currentGameState.players.size() - 1)) break;
 			vector<ActionType> possibleActions = getPossibleActions(m_currentGameState.players[i]->m_playerState, m_currentGameState);
 
-			if (possibleActions.size() == 0) continue;
+			if (possibleActions.size() > 0) {
+				cout << "player " + m_currentGameState.players[i]->getName() + " make an action" << endl;
+				Action playerAction = m_currentGameState.players[i]->getAction(m_currentGameState, possibleActions);
 
-			Action playerAction = m_currentGameState.players[i]->getAction(m_currentGameState, possibleActions);
+				if (playerAction.actionType == CHECK) playerIdxOnCheck.push_back(i);
 
-			if (playerAction.actionType == CHECK) playerIdxOnCheck.push_back(i);
-
-			applyActionOnPlayer(m_currentGameState.players[i], playerAction);
+				applyActionOnPlayer(m_currentGameState.players[i], playerAction);
+			}
+			
 			if (m_currentGameState.players[i]->m_playerState.active) activePlayers.push_back(i);
 		}
 
@@ -146,6 +146,7 @@ namespace game {
 
 				if (activePlayers.size() == 0 && i == (playerIdxOnCheck.size() - 1)) break;
 
+				cout << "player " + m_currentGameState.players[i]->getName() + " make an action cause he was on cjeck" << endl;
 				vector<ActionType> possibleActions = getPossibleActions(m_currentGameState.players[i]->m_playerState, m_currentGameState);
 
 				if (possibleActions.size() == 0) continue;
@@ -190,7 +191,7 @@ namespace game {
 			
 		}
 		return winners;
-	} 
+	}
 
 	void TexasHoldemGame::doHands(bool p_verbose, int p_hmHands) {
 		for (int i = 0; i < p_hmHands; i++)
@@ -262,7 +263,7 @@ namespace game {
 	vector<ActionType> TexasHoldemGame::getPossibleActions(PlayerState p_playerState, GameState p_gameState) {
 		vector<ActionType> possibleActions { };
 
-		if (p_gameState.board.size() < 5) {
+		if (p_gameState.board.size() <= 5) {
 			
 			possibleActions.push_back(ALL_IN);
 			possibleActions.push_back(FOLD);
@@ -725,7 +726,7 @@ namespace game {
 		{
 			m_cardStack.putInTheStack(m_currentGameState.board[i]);
 		}
-		m_currentGameState.iteration = p_board.size() - 1;
+		m_currentGameState.iteration = p_board.size() - 2;
 		m_currentGameState.board = p_board;
 
 	}
