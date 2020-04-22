@@ -148,7 +148,7 @@ namespace game {
 				simulated_players.push_back(slave_player);
 
 			}
-			if (real_players[i]->getMethod() == "Base")
+			else if (real_players[i]->getMethod() == "Base")
 			{
 				BaseAgent* base_player = new BaseAgent(real_players[i]->getName());
 				simulated_players.push_back(base_player);
