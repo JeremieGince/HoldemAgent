@@ -23,7 +23,7 @@ namespace game {
      * \param p_asset Asset of the card
      * \param p_number Number of the card.
      * \pre p_asset Must be a string among: clubs, heart, spades and diamonds .
-     * \pre p_number Must be an int from 1 to 13.
+     * \pre p_number Must be an int from 1 to 14.
      *
      * \return A card object.
      */
@@ -94,7 +94,7 @@ namespace game {
             assetStr = "Spades";
             break;
         case game::DIAMONDS:
-            assetStr = "Diamond";
+            assetStr = "Diamonds";
             break;
         default:
             break;
@@ -152,10 +152,8 @@ namespace game {
         return numberStr;
     }
     
-    const string& Card::asString() const {
-        string out = "";
-        out += Card::numberAsString(m_number) + " of " + Card::assetAsString(m_asset);
-        return out;
+    string Card::asString() {
+        return Card::numberAsString(m_number) + " of " + Card::assetAsString(m_asset);
     }
 
 	bool operator==(const Card& p_lCard, const Card& p_rCard)
