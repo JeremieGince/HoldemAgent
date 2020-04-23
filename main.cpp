@@ -18,8 +18,8 @@
 
 using namespace game;
 using namespace std;
-/*
 
+/*
 __global__ void add(int* a, int* b, int* c, int n) {
 	int index = threadIdx.x + blockIdx.x * blockDim.x;
 	if (index < n)
@@ -146,7 +146,7 @@ void checkHands() {
 
 int main(void) {
 
-	
+	//main_test_cuda();
 
 	Player player_rn0 = Player("rn0", "random");
 	Player player_rn1 = Player("rn1", "random");
@@ -159,7 +159,9 @@ int main(void) {
 	MCTS mcts_agent = MCTS("mcts");
 
 	//vector<Player*> players{ &player_rn0, &player_rn1, &player_rn2, &player_rn3, &player_base0, &player_base1, &player_base2, &player_base3 };
-	vector<Player*> players{&mcts_agent, &player_base0 };
+	//vector<Player*> players{&mcts_agent, &player_base0 };
+	vector<Player*> players{ &mcts_agent, &player_base0, &player_rn0 };
+	//vector<Player*> players{ &mcts_agent, &player_rn0 };
 	//vector<Player*> players{ &player_base0, &player_base1 };
 	//vector<Player*> players{ &player_base0, &player_base1, &player_base2 };
 
@@ -170,7 +172,7 @@ int main(void) {
 
 	game.start();
 	
-	game.doHands(true, 1);
+	game.doHands(false, true, 10000);
 
 	cout << game.getWinsStatsAsString() << endl;
 

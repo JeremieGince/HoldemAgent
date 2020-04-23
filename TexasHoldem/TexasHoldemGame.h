@@ -16,6 +16,7 @@
 #include "contract_exception.h"
 #include "Card.h"
 #include "CardStack.h"
+#include "util.h"
 
 
 namespace game {
@@ -42,7 +43,6 @@ namespace game {
         std::vector<Card> board = std::vector<Card>();
         int currentBet = 0;
         bool currentCheck = true;
-        CardStack* cardStack;
 
         bool terminal = false;
         int winnerIdx = 0;
@@ -71,19 +71,19 @@ namespace game {
 
     */
     enum HandMaximumValue {
-        HIGHCARDMaxVal = ACE + KING + QUEEN + JACK + TEN,
-        PAIRMaxVal = 2*ACE + KING + QUEEN + JACK,
-        TWOPAIRMaxVal = 2 * ACE + 2 * KING + QUEEN,
-        THREEOFAKINDMaxVal = 3 * ACE + KING + QUEEN,
-        STRAIGHTMaxVal = ACE + KING + QUEEN + JACK + TEN,
-        FLUSHMaxVal = ACE + KING + QUEEN + JACK + TEN,
-        FULLHOUSEMaxVal = 3 * ACE + 2 * KING,
-        FOUROFAKINDMaxVal = 4 * ACE + KING,
-        STRAIGHTFLUSHMaxVal = ACE + KING + QUEEN + JACK + TEN,
-        ROYALFLUSHMaxVal = ACE + KING + QUEEN + JACK + TEN
+        HIGHCARDMaxVal = ACE + KING + QUEEN + JACK + TEN + NINE + EIGHT,
+        PAIRMaxVal = 2*ACE + KING + QUEEN + JACK + TEN + NINE,
+        TWOPAIRMaxVal = 2 * ACE + 2 * KING + QUEEN + TEN + NINE,
+        THREEOFAKINDMaxVal = 3 * ACE + KING + QUEEN + TEN + NINE,
+        STRAIGHTMaxVal = ACE + KING + QUEEN + JACK + TEN + NINE + EIGHT,
+        FLUSHMaxVal = ACE + KING + QUEEN + JACK + TEN + NINE + EIGHT,
+        FULLHOUSEMaxVal = 3 * ACE + 2 * KING + NINE + EIGHT,
+        FOUROFAKINDMaxVal = 4 * ACE + KING + NINE + EIGHT,
+        STRAIGHTFLUSHMaxVal = ACE + KING + QUEEN + JACK + TEN + NINE + EIGHT,
+        ROYALFLUSHMaxVal = ACE + KING + QUEEN + JACK + TEN + NINE + EIGHT
     };
     enum HandScoreOffset{
-        HIGHCARDoffset = 0, 
+        HIGHCARDoffset = 0,
         PAIRoffset = HIGHCARDMaxVal,
         TWOPAIRoffset = HIGHCARDMaxVal + PAIRMaxVal,
         THREEOFAKINDoffset = HIGHCARDMaxVal + PAIRMaxVal + TWOPAIRMaxVal,
@@ -157,7 +157,7 @@ namespace game {
         void updateCurrentGameState();
         void doRoundUntilEnd();
         std::array<int, 2> doHand(bool p_verbose = true);
-        void doHands(bool p_verbose = true, int p_hmHands = 10);
+        void doHands(bool p_verbose = false, bool p_progress = true, int p_hmHands = 10);
         std::string getCurrentStateAsString();
 
         std::string getWinsStatsAsString();
@@ -178,6 +178,17 @@ namespace game {
         static bool checkThreeOfAKind(std::vector<Card> p_hand);
         static bool checkTwoPair(std::vector<Card> p_hand);
         static bool checkPair(std::vector<Card> p_hand);
+
+        static int getScoreRoyalFlush(std::vector<Card> p_hand);
+        static int getScoreStraightFlush(std::vector<Card> p_hand);
+        static int getScoreFourOfAKind(std::vector<Card> p_hand);
+        static int getScoreFullHouse(std::vector<Card> p_hand);
+        static int getScoreFlush(std::vector<Card> p_hand);
+        static int getScoreStraight(std::vector<Card> p_hand);
+        static int getScoreThreeOfAKind(std::vector<Card> p_hand);
+        static int getScoreTwoPair(std::vector<Card> p_hand);
+        static int getScorePair(std::vector<Card> p_hand);
+        static int getScoreHighCard(std::vector<Card> p_hand);
 
     };
 }

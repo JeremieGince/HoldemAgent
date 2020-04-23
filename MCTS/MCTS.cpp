@@ -14,13 +14,13 @@ namespace game {
 
 	Action MCTS::getAction(GameState p_gameState, vector<ActionType> p_possibleActions)
 	{
-		if (m_tree->root->nb_visits == 0) {
+		if (m_tree->root->nb_visits != 0) {
 			relocate_root_in_tree(p_gameState);
 		}
 		create_game_from_state(p_gameState);
-		while (m_tree->root->nb_visits < 5) {
+		while (m_tree->root->nb_visits < 10000) {
 			set_game(p_gameState);
-			simulation_game->doHand(false);
+			simulation_game.doHand(false);
 			Node* last_Node = manage_leafs(&p_gameState);
 			backpropagation_of_probabilities(last_Node);
 
@@ -132,7 +132,7 @@ namespace game {
 	}
 	bool MCTS::is_decision_sccessful()
 	{
-		GameState finishing_state = simulation_game->getState();
+		GameState finishing_state = simulation_game.getState();
 		if ((finishing_state).winnerIdx == m_playerIdx)
 		{
 			return true;
@@ -158,13 +158,13 @@ namespace game {
 		for (int i = 0; i < getCards().size(); i++)
 			hand_cards.push_back(*((getCards()[i])).copy());
 		map<int, vector<Card>> card_set = map<int, vector<Card>>({ {-1, new_board}, {m_playerIdx, hand_cards} });
-		simulation_game->setStartingCards(card_set);
+		simulation_game.setStartingCards(card_set);
 	}
 
 	void MCTS::create_game_from_state(GameState p_gameState)
 	{
 		vector<Player*> simulation_players = regenarate_players(p_gameState.players);
-		simulation_game = new TexasHoldemGame(simulation_players, 10);
+		simulation_game = TexasHoldemGame(simulation_players, 10);
 	}
 	vector<Player*> MCTS::regenarate_players(vector<Player*> real_players)
 	{
@@ -223,8 +223,8 @@ namespace game {
 	}
 	void MCTS::reset() {
 		delete m_tree;
-		delete simulation_game;
 		m_tree = new Tree();
+		last_decision_node = new DecisionNode();
 	}
 
 }

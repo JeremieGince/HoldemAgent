@@ -46,7 +46,6 @@ namespace game {
 		
 		m_currentGameState.iteration = 0;
 		m_currentGameState.players = m_players;
-		m_currentGameState.cardStack = &m_cardStack;
 		m_currentGameState.terminal = false;
 
 		for (int i = 0; i < m_currentGameState.players.size(); i++)
@@ -201,11 +200,23 @@ namespace game {
 		return winners;
 	}
 
-	void TexasHoldemGame::doHands(bool p_verbose, int p_hmHands) {
+	void TexasHoldemGame::doHands(bool p_verbose, bool p_progress, int p_hmHands) {
+
+		int last_progress = -1;
+		ProgressBar pb = ProgressBar(p_hmHands, "Do hands");
+
 		for (int i = 0; i < p_hmHands; i++)
 		{
 			start();
 			doHand(p_verbose);
+
+			if (p_progress) {
+				int progress = (int)(100.0f * ((i + 1.0f) / p_hmHands));
+				//if (progress != last_progress && progress % 10 == 0) cout << to_string(progress) << "%" << endl;
+				last_progress = progress;
+				pb++;
+			}
+			
 		}
 
 		if (p_verbose) cout << getWinsStatsAsString();
@@ -464,33 +475,43 @@ namespace game {
 
 	bool TexasHoldemGame::checkStraightFlush(std::vector<Card> p_hand) {
 		bool sameSuit = true;
+		int countSameSuit = 0;
 		bool hasACE = false;
+
 		Asset suit = p_hand[0].reqAsset();
 		vector<int> sequence;
+
 		int sum = 0;
 		for each (Card card in p_hand)
 		{
-			if (card.reqAsset() != suit) return false;
-
-			if (card.reqNumber() == ACE) {
-				hasACE = true;
-			}
-			else {
-				int num = Asset(card.reqNumber());
-				sequence.push_back(num);
-				sum += num;
+			if (card.reqAsset() == suit) {
+				countSameSuit++;
+				if (card.reqNumber() == ACE) {
+					hasACE = true;
+				}
+				else {
+					int num = Asset(card.reqNumber());
+					sequence.push_back(num);
+					sum += num;
+				}
 			}
 		}
+
+		sameSuit = countSameSuit >= 5;
+
+		if (!sameSuit) return false;
 
 		sort(sequence.begin(), sequence.end());
-		if (sequence[0] == 2) {
-			sequence.push_back(1);
-			sum += 1;
-			sort(sequence.begin(), sequence.end());
-		}
-		else if(sequence[sequence.size()-1] == Asset(KING)){
-			sequence.push_back(Asset(KING)+1);
-			sum += Asset(KING)+1;
+		if (hasACE) {
+			if (sequence[0] == 2) {
+				sequence.push_back(1);
+				sum += 1;
+				sort(sequence.begin(), sequence.end());
+			}
+			else if (sequence[sequence.size() - 1] == Asset(KING)) {
+				sequence.push_back(Asset(KING) + 1);
+				sum += Asset(KING) + 1;
+			}
 		}
 
 		int expectedResult = ((sequence[sequence.size()-1] * (sequence[sequence.size()-1] + 1)) / 2) - (((sequence[0]-1) * sequence[0]) / 2);
@@ -554,11 +575,12 @@ namespace game {
 
 	bool TexasHoldemGame::checkFlush(std::vector<Card> p_hand){
 		Asset suit = p_hand[0].reqAsset();
+		int count = 0;
 		for each (Card card in p_hand)
 		{
-			if (card.reqAsset() != suit) return false;
+			if (card.reqAsset() == suit) count++;
 		}
-		return true;
+		return count >= 5;
 	}
 
 
@@ -580,19 +602,28 @@ namespace game {
 		}
 
 		sort(sequence.begin(), sequence.end());
-		if (sequence[0] == 2) {
-			sequence.push_back(1);
-			sum += 1;
-			sort(sequence.begin(), sequence.end());
+		if (hasACE) {
+			if (sequence[0] == 2) {
+				sequence.push_back(1);
+				sum += 1;
+				sort(sequence.begin(), sequence.end());
+			}
+			else if (sequence[sequence.size() - 1] == Asset(KING)) {
+				sequence.push_back(Asset(KING) + 1);
+				sum += Asset(KING) + 1;
+			}
 		}
-		else if (sequence[sequence.size() -1] == Asset(KING)) {
-			sequence.push_back(Asset(KING) + 1);
-			sum += Asset(KING) + 1;
+		int count = 0;
+		for (int i = 0; i < sequence.size()-1; i++) {
+			if (sequence[i] + 1 == sequence[i + 1]) {
+				count++;
+			}
 		}
 
-		int expectedResult = ((sequence[sequence.size() - 1] * (sequence[sequence.size() - 1] + 1)) / 2) - (((sequence[0] - 1) * sequence[0]) / 2);
+		//int expectedResult = ((sequence[sequence.size() - 1] * (sequence[sequence.size() - 1] + 1)) / 2) - (((sequence[0] - 1) * sequence[0]) / 2);
 
-		return expectedResult == sum;
+		//return expectedResult == sum;
+		return count >= 5;
 	}
 
 
@@ -647,7 +678,6 @@ namespace game {
 		return pairCount >= 2;
 	}
 
-
 	bool TexasHoldemGame::checkPair(std::vector<Card> p_hand) {
 		map<CardNumber, int> count;
 		map<CardNumber, int>::iterator it;
@@ -672,49 +702,320 @@ namespace game {
 		return false;
 	}
 
+	int TexasHoldemGame::getScoreRoyalFlush(std::vector<Card> p_hand)
+	{
+		return int(checkRoyalFlush(p_hand)) * HandScoreOffset::ROYALFLUSHoffset;
+	}
 
+	int TexasHoldemGame::getScoreStraightFlush(std::vector<Card> p_hand)
+	{
+		bool sameSuit = true;
+		int countSameSuit = 0;
+		bool hasACE = false;
+		Asset suit = p_hand[0].reqAsset();
+		vector<int> sequence;
+		int sum = 0;
+		bool check = false;
+		for each (Card card in p_hand)
+		{
+			if (card.reqAsset() != suit) {
+				if (card.reqNumber() == ACE) {
+					hasACE = true;
+				}
+				else {
+					int num = Asset(card.reqNumber());
+					sequence.push_back(num);
+					sum += num;
+				}
+				countSameSuit++;
+			}
+		}
+
+		sameSuit = countSameSuit >= 5;
+
+		if (!sameSuit) return 0;
+
+		sort(sequence.begin(), sequence.end());
+		if (sequence[0] == 2) {
+			sequence.push_back(1);
+			sum += 1;
+			sort(sequence.begin(), sequence.end());
+		}
+		else if (sequence[sequence.size() - 1] == Asset(KING)) {
+			sequence.push_back(Asset(KING) + 1);
+			sum += Asset(KING) + 1;
+		}
+
+		int expectedResult = ((sequence[sequence.size() - 1] * (sequence[sequence.size() - 1] + 1)) / 2) - (((sequence[0] - 1) * sequence[0]) / 2);
+
+		check = sameSuit && expectedResult == sum;
+		return int(check) * (HandScoreOffset::STRAIGHTFLUSHoffset + sequence[sequence.size() - 1]);
+	}
+
+	int TexasHoldemGame::getScoreFourOfAKind(std::vector<Card> p_hand)
+	{
+		map<CardNumber, int> count;
+		map<CardNumber, int>::iterator it;
+		bool check = false;
+		int cnumber = 0;
+		for each (Card card in p_hand)
+		{
+			it = count.find(card.reqNumber());
+			if (it == count.end()) {
+				count.insert({ card.reqNumber(), 1 });
+			}
+			else {
+				it->second++;
+			}
+		}
+		it = count.begin();
+		while (it != count.end()) {
+
+			if (it->second >= 4) {
+				check = true;
+				cnumber = it->first;
+			}
+			it++;
+		}
+		return int(check) * (HandScoreOffset::FOUROFAKINDoffset + cnumber);
+	}
+
+	int TexasHoldemGame::getScoreFullHouse(std::vector<Card> p_hand)
+	{
+		bool hasThree = false;
+		bool hasPair = false;
+		bool check = false;
+		map<CardNumber, int> count;
+		map<CardNumber, int>::iterator it;
+
+		int cnum3 = 0;
+		int cnum2 = 0;
+
+		for each (Card card in p_hand)
+		{
+			it = count.find(card.reqNumber());
+			if (it == count.end()) {
+				count.insert({ card.reqNumber(), 1 });
+			}
+			else {
+				it->second++;
+			}
+		}
+		it = count.begin();
+		while (it != count.end()) {
+
+			if (it->second == 3) {
+				hasThree = true;
+				cnum3 = it->first;
+			}
+			else if (it->second == 2) {
+				hasPair = true;
+				cnum2 = it->first;
+			}
+
+			it++;
+		}
+		check =  hasPair && hasThree;
+		return int(check) * (HandScoreOffset::FULLHOUSEoffset + cnum3);
+	}
+
+	int TexasHoldemGame::getScoreFlush(std::vector<Card> p_hand)
+	{
+		Asset suit = p_hand[0].reqAsset();
+		int maxcnum = 0;
+		int count = 0;
+		for each (Card card in p_hand)
+		{
+			if (card.reqAsset() == suit) {
+				if (card.reqNumber() > maxcnum) maxcnum = card.reqNumber();
+				count++;
+			}
+		}
+		return int(count >= 5) * (HandScoreOffset::FLUSHoffset + maxcnum);
+	}
+
+	int TexasHoldemGame::getScoreStraight(std::vector<Card> p_hand)
+	{
+		bool hasACE = false;
+		Asset suit = p_hand[0].reqAsset();
+		vector<int> sequence;
+		int sum = 0;
+		for each (Card card in p_hand)
+		{
+			if (card.reqNumber() == ACE) {
+				hasACE = true;
+			}
+			else {
+				int num = Asset(card.reqNumber());
+				sequence.push_back(num);
+				sum += num;
+			}
+		}
+
+		sort(sequence.begin(), sequence.end());
+		if (hasACE) {
+			if (sequence[0] == 2) {
+				sequence.push_back(1);
+				sum += 1;
+				sort(sequence.begin(), sequence.end());
+			}
+			else if (sequence[sequence.size() - 1] == Asset(KING)) {
+				sequence.push_back(Asset(KING) + 1);
+				sum += Asset(KING) + 1;
+			}
+		}
+		int count = 0;
+		int maxcnum = 0;
+		for (int i = 0; i < sequence.size() - 1; i++) {
+			if (sequence[i] + 1 == sequence[i+1]) {
+				count++;
+				if (sequence[i] > maxcnum) maxcnum = sequence[i];
+			}
+		}
+
+		if (sequence[sequence.size() - 2] + 1 == sequence[sequence.size() - 1] && sequence[sequence.size() - 1] > maxcnum) maxcnum = sequence[sequence.size() - 1];
+		//int expectedResult = ((sequence[sequence.size() - 1] * (sequence[sequence.size() - 1] + 1)) / 2) - (((sequence[0] - 1) * sequence[0]) / 2);
+
+		//return expectedResult == sum;
+		return int(count >= 5) * (HandScoreOffset::STRAIGHToffset + maxcnum);
+	}
+
+	int TexasHoldemGame::getScoreThreeOfAKind(std::vector<Card> p_hand)
+	{
+		map<CardNumber, int> count;
+		map<CardNumber, int>::iterator it;
+
+		bool check = false;
+		int tcnum = 0;
+
+		for each (Card card in p_hand)
+		{
+			it = count.find(card.reqNumber());
+			if (it == count.end()) {
+				count.insert({ card.reqNumber(), 1 });
+			}
+			else {
+				it->second++;
+			}
+		}
+		it = count.begin();
+		while (it != count.end()) {
+
+			if (it->second >= 3) {
+				check = true;
+				tcnum = it->first;
+			}
+
+			it++;
+		}
+		return int(check) * (HandScoreOffset::THREEOFAKINDoffset + tcnum);
+	}
+
+	int TexasHoldemGame::getScoreTwoPair(std::vector<Card> p_hand)
+	{
+		int pairCount = 0;
+
+		map<CardNumber, int> count;
+		map<CardNumber, int>::iterator it;
+
+		int maxcnum = 0;
+
+		for each (Card card in p_hand)
+		{
+			it = count.find(card.reqNumber());
+			if (it == count.end()) {
+				count.insert({ card.reqNumber(), 1 });
+			}
+			else {
+				it->second++;
+			}
+		}
+		it = count.begin();
+		while (it != count.end()) {
+
+			if (it->second >= 2) {
+				pairCount++;
+				if (it->first > maxcnum) maxcnum = it->first;
+			}
+
+			it++;
+		}
+		return int(pairCount >= 2) * (HandScoreOffset::TWOPAIRoffset + maxcnum);
+	}
+
+	int TexasHoldemGame::getScorePair(std::vector<Card> p_hand)
+	{
+		map<CardNumber, int> count;
+		map<CardNumber, int>::iterator it;
+
+		int cnum = 0;
+		bool check = false;
+
+		for each (Card card in p_hand)
+		{
+			it = count.find(card.reqNumber());
+			if (it == count.end()) {
+				count.insert({ card.reqNumber(), 1 });
+			}
+			else {
+				it->second++;
+			}
+		}
+		it = count.begin();
+		while (it != count.end()) {
+
+			if (it->second >= 2) {
+				check = true;
+				cnum = it->first;
+			}
+
+			it++;
+		}
+		return int(check) * (HandScoreOffset::PAIRoffset + cnum);
+	}
+
+	int TexasHoldemGame::getScoreHighCard(std::vector<Card> p_hand)
+	{
+
+		int maxcnum = 0;
+
+		for (int i = 0; i < p_hand.size(); i++) {
+			if (p_hand[i].reqNumber() > maxcnum) maxcnum = p_hand[i].reqNumber();
+		}
+
+		return HandScoreOffset::HIGHCARDoffset + maxcnum;
+	}
 
 	int TexasHoldemGame::getReward(vector<Card> p_hand) {
 		int reward = 0;
 
 		vector<Card> playerHand = p_hand;
 		playerHand.insert(playerHand.end(), m_currentGameState.board.begin(), m_currentGameState.board.end());
+		reward = getScoreRoyalFlush(playerHand);
+		if (reward > 0) return reward;
 
-		for each (Card card in playerHand)
-		{
-			reward += card.reqNumber();
-		}
+		reward = getScoreStraightFlush(playerHand);
+		if (reward > 0) return reward;
 
-		if (checkRoyalFlush(playerHand)) {
-			reward += HandScoreOffset::ROYALFLUSHoffset;
-		}
-		else if (checkStraightFlush(playerHand)) {
-			reward += HandScoreOffset::STRAIGHTFLUSHoffset;
-		}
-		else if (checkFourOfAKind(playerHand)) {
-			reward += HandScoreOffset::FOUROFAKINDoffset;
-		}
-		else if (checkFullHouse(playerHand)) {
-			reward += HandScoreOffset::FULLHOUSEoffset;
-		}
-		else if (checkFlush(playerHand)) {
-			reward += HandScoreOffset::FLUSHoffset;
-		}
-		else if (checkStraight(playerHand)) {
-			reward += HandScoreOffset::STRAIGHToffset;
-		}
-		else if (checkThreeOfAKind(playerHand)) {
-			reward += HandScoreOffset::THREEOFAKINDoffset;
-		}
-		else if (checkTwoPair(playerHand)) {
-			reward += HandScoreOffset::TWOPAIRoffset;
-		}
-		else if (checkPair(playerHand)) {
-			reward += HandScoreOffset::PAIRoffset;
-		}
+		reward = getScoreFullHouse(playerHand);
+		if (reward > 0) return reward;
 
+		reward = getScoreFlush(playerHand);
+		if (reward > 0) return reward;
 
-		return reward;
+		reward = getScoreStraight(playerHand);
+		if (reward > 0) return reward;
+
+		reward = getScoreThreeOfAKind(playerHand);
+		if (reward > 0) return reward;
+
+		reward = getScoreTwoPair(playerHand);
+		if (reward > 0) return reward;
+
+		reward = getScorePair(playerHand);
+		if (reward > 0) return reward;
+
+		return getScoreHighCard(p_hand);
 	}
 
 	void TexasHoldemGame::setBoard(std::vector<Card> p_board)

@@ -24,8 +24,8 @@ namespace game {
     class MCTS : public Player {
     private:
         Tree* m_tree = new Tree();
-        TexasHoldemGame* simulation_game;
-        DecisionNode* last_decision_node;
+        TexasHoldemGame simulation_game;
+        DecisionNode* last_decision_node = new DecisionNode();
 
 
         void backpropagation_of_probabilities(Node* final_Node);
