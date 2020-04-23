@@ -98,13 +98,12 @@ namespace game {
 	}
 	bool MCTS::is_decision_sccessful()
 	{
-		GameState* finishing_state = new GameState();
-		*finishing_state = simulation_game->getState();
-		if ((*finishing_state).winnerIdx == m_playerIdx)
+		GameState finishing_state = simulation_game->getState();
+		if ((finishing_state).winnerIdx == m_playerIdx)
 		{
 			return true;
 		}
-		else if ((!(finishing_state->players[m_playerIdx]->m_playerState.active)) && (finishing_state->expectedWinnerIdx != m_playerIdx))
+		else if ((!(finishing_state.players[m_playerIdx]->m_playerState.active)) && (finishing_state.expectedWinnerIdx != m_playerIdx))
 		{
 			return true;
 		}
@@ -190,6 +189,7 @@ namespace game {
 	}
 	void MCTS::reset() {
 		delete m_tree;
+		delete simulation_game;
 		m_tree = new Tree();
 	}
 
