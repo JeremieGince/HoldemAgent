@@ -15,7 +15,7 @@ namespace game {
 	Action MCTS::getAction(GameState p_gameState, vector<ActionType> p_possibleActions)
 	{
 		create_game_from_state(p_gameState);
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 1000; i++) {
 			set_game(p_gameState);
 			simulation_game->doHand(false);
 			Node* last_Node = manage_leafs(&p_gameState);
