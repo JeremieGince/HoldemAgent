@@ -99,7 +99,6 @@ namespace game {
     class TexasHoldemGame {
 
     private:
-        std::vector<GameState> m_states;
         std::vector<Player*> m_players;
         GameState m_currentGameState;
         int m_startBank;
@@ -136,6 +135,7 @@ namespace game {
     public:
         TexasHoldemGame();
         TexasHoldemGame(std::vector<Player*> p_players, int p_startBank);
+        ~TexasHoldemGame();
 
         static GameState getRandomNextState(GameState p_gameState, Action p_action);
         GameState getState();

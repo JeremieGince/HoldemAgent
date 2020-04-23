@@ -15,9 +15,9 @@ namespace game {
 	Action MCTS::getAction(GameState p_gameState, vector<ActionType> p_possibleActions)
 	{
 		create_game_from_state(p_gameState);
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 10000; i++) {
 			set_game(p_gameState);
-			simulation_game->doHand(true);
+			simulation_game->doHand(false);
 			Node* last_Node = manage_leafs(&p_gameState);
 			backpropagation_of_probabilities(last_Node);
 
@@ -38,6 +38,7 @@ namespace game {
 
 
 		}
+		//iter_of_optimal_choice = -1;
 		last_decision_node = m_tree->root->children[iter_of_optimal_choice];
 		return *(last_decision_node->decision);
 	}
@@ -117,14 +118,14 @@ namespace game {
 
 	void MCTS::set_game(GameState p_gameState)
 	{
-		vector<Card>* new_board = new vector<Card>();
+		vector<Card> new_board = vector<Card>();
 		for (int i = 0; i < p_gameState.board.size(); i++)
-			new_board->push_back(*((p_gameState.board[i])).copy());
-		vector<Card>* hand_cards = new vector<Card>();
+			new_board.push_back(*((p_gameState.board[i])).copy());
+		vector<Card> hand_cards = vector<Card>();
 		for (int i = 0; i < getCards().size(); i++)
-			hand_cards->push_back(*((getCards()[i])).copy());
-		map<int, vector<Card>>* card_set = new map<int, vector<Card>>({ {-1, *new_board}, {m_playerIdx, *hand_cards} });
-		simulation_game->setStartingCards(*card_set);
+			hand_cards.push_back(*((getCards()[i])).copy());
+		map<int, vector<Card>> card_set = map<int, vector<Card>>({ {-1, new_board}, {m_playerIdx, hand_cards} });
+		simulation_game->setStartingCards(card_set);
 	}
 
 	void MCTS::create_game_from_state(GameState p_gameState)
@@ -188,8 +189,8 @@ namespace game {
 		cout << getTreeAsString(m_tree);
 	}
 	void MCTS::reset() {
-		Tree* m_tree = new Tree();
-		DecisionNode* last_Decision_Node = new DecisionNode();
+		delete m_tree;
+		m_tree = new Tree();
 	}
 
 }

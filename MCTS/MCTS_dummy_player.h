@@ -31,6 +31,15 @@ namespace game {
         std::vector<DecisionNode*> children = std::vector<DecisionNode*>();
         bool is_leaf = false;
         bool is_not_root = true;
+
+        ~Node() {
+            delete gameState;
+            for (int i = 0; i < children.size(); i++)
+            {
+                delete children[i];
+            }
+        }
+
     };
 
     struct DecisionNode {
@@ -39,11 +48,23 @@ namespace game {
         float nb_achievements = 0;
         Node* parent = new Node();
         std::vector<Node*> children = std::vector<Node*>();
+
+        ~DecisionNode() {
+            delete decision;
+            for (int i = 0; i < children.size(); i++)
+            {
+                delete children[i];
+            }
+        }
     };
 
     struct Tree {
         Node* root = new Node();
         DecisionNode* slave_last_choice = new DecisionNode();
+
+        ~Tree() {
+            delete root;
+        }
     };
 
     class MCTS_dummy_player : public Player {

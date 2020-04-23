@@ -29,6 +29,13 @@ namespace game {
 		}
 	}
 
+	TexasHoldemGame::~TexasHoldemGame()
+	{
+		for (int i = 0; i < m_players.size(); i++) {
+			delete m_players[i];
+		}
+	}
+
 	void TexasHoldemGame::start() {
 		reset();
 
@@ -131,7 +138,7 @@ namespace game {
 			vector<ActionType> possibleActions = getPossibleActions(m_currentGameState.players[i]->m_playerState, m_currentGameState);
 
 			if (possibleActions.size() > 0) {
-				cout << "player " + m_currentGameState.players[i]->getName() + " make an action" << endl;
+				//cout << "player " + m_currentGameState.players[i]->getName() + " make an action" << endl;
 				Action playerAction = m_currentGameState.players[i]->getAction(m_currentGameState, possibleActions);
 
 				if (playerAction.actionType == CHECK) playerIdxOnCheck.push_back(i);
@@ -150,7 +157,7 @@ namespace game {
 
 				if (activePlayers.size() == 0 && i == (playerIdxOnCheck.size() - 1)) break;
 
-				cout << "player " + m_currentGameState.players[i]->getName() + " make an action cause he was on check" << endl;
+				//cout << "player " + m_currentGameState.players[i]->getName() + " make an action cause he was on check" << endl;
 				vector<ActionType> possibleActions = getPossibleActions(m_currentGameState.players[i]->m_playerState, m_currentGameState);
 
 				if (possibleActions.size() == 0) continue;
@@ -263,7 +270,6 @@ namespace game {
 		}
 	}
 
-
 	vector<ActionType> TexasHoldemGame::getPossibleActions(PlayerState p_playerState, GameState p_gameState) {
 		vector<ActionType> possibleActions { };
 
@@ -281,9 +287,6 @@ namespace game {
 
 	void TexasHoldemGame::updateCurrentGameState() {
 		GameState nextState = m_currentGameState;
-
-		m_states.push_back(m_currentGameState);
-
 		nextState.iteration++;
 		m_currentGameState = nextState;
 		m_currentGameState.currentCheck = true;
@@ -429,7 +432,6 @@ namespace game {
 		return m_currentGameState;
 	}
 
-
 	bool TexasHoldemGame::checkRoyalFlush(std::vector<Card> p_hand) {
 		bool hasAce = false;
 		bool hasKing = false;
@@ -462,7 +464,6 @@ namespace game {
 		}
 		return hasAce && hasKing && hasQueen && hasJack && hasTen;
 	}
-
 
 	bool TexasHoldemGame::checkStraightFlush(std::vector<Card> p_hand) {
 		bool sameSuit = true;
@@ -751,8 +752,6 @@ namespace game {
 		
 		m_currentGameState.players[p_playerIdx]->setCards(p_hand);
 	}
-
-
 
 	string TexasHoldemGame::getWinsStatsAsString() {
 		string out = "\n Number of hands: " + to_string(m_handCounter) + "\n";
