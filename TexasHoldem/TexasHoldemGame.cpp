@@ -31,9 +31,6 @@ namespace game {
 
 	TexasHoldemGame::~TexasHoldemGame()
 	{
-		for (int i = 0; i < m_players.size(); i++) {
-			delete m_players[i];
-		}
 	}
 
 	void TexasHoldemGame::start() {
