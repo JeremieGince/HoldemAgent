@@ -222,7 +222,7 @@ namespace game {
 		cout << getTreeAsString(m_tree);
 	}
 	void MCTS::reset() {
-		delete m_tree;
+		
 		delete simulation_game;
 		m_tree = new Tree();
 	}

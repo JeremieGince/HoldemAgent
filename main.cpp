@@ -170,7 +170,7 @@ int main(void) {
 
 	game.start();
 	
-	game.doHands(false, 10);
+	game.doHands(true, 1);
 
 	cout << game.getWinsStatsAsString() << endl;
 
