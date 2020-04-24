@@ -30,20 +30,19 @@ namespace game {
 		int iter_of_optimal_choice = -1;
 		for (int i = 0; i < m_tree->root->children.size(); i++)
 		{
-			cout << "in-the-boucle" << endl;
 			float success_rate = 0.0f;
 			if ((m_tree->root->children[i]->nb_visits) > 0) {
 				success_rate = (m_tree->root->children[i]->nb_achievements) / (m_tree->root->children[i]->nb_visits);
+
 			}
 			if (success_rate > max_success_rate)
 			{
 				iter_of_optimal_choice = i;
+				max_success_rate = success_rate;
 			}
 
 
 		}
-		cout << m_tree->root->children.size() << endl;
-		cout << iter_of_optimal_choice << endl;
 		last_decision_node = m_tree->root->children[iter_of_optimal_choice];
 		return *(last_decision_node->decision);
 	}

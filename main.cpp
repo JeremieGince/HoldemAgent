@@ -148,7 +148,7 @@ int main(void) {
 
 	//main_test_cuda();
 
-	vector<int> hmSimulationsVector = {5, 100, 1000, 10000, 100000};
+	vector<int> hmSimulationsVector = {1000, 100, 1000, 10000, 100000};
 	for each (int hmSimulations in hmSimulationsVector)
 	{
 		Player player_rn0 = Player("rn0", "random");
@@ -162,8 +162,8 @@ int main(void) {
 		MCTS mcts_agent = MCTS("mcts", hmSimulations);
 
 		//vector<Player*> players{ &player_rn0, &player_rn1, &player_rn2, &player_rn3, &player_base0, &player_base1, &player_base2, &player_base3 };
-		//vector<Player*> players{&mcts_agent, &player_base0 };
-		vector<Player*> players{ &mcts_agent, &player_base0, &player_rn0 };
+		vector<Player*> players{&mcts_agent, &player_base0 };
+		//vector<Player*> players{ &mcts_agent, &player_base0, &player_rn0 };
 		//vector<Player*> players{ &mcts_agent, &player_rn0 };
 		//vector<Player*> players{ &player_base0, &player_base1 };
 		//vector<Player*> players{ &player_base0, &player_base1, &player_base2 };
@@ -177,7 +177,7 @@ int main(void) {
 
 		game.start();
 
-		game.doHands(false, true, 1000, "TexasHoldemSimulations_"+to_string(hmSimulations)+".dat");
+		game.doHands(false, true,  30, "TexasHoldemSimulations_"+to_string(hmSimulations)+".dat");
 
 		cout << game.getWinsStatsAsString() << endl;
 
