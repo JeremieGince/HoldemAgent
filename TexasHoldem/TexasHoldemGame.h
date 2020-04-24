@@ -7,10 +7,12 @@
 #ifndef TEXASHOLDEMGAME_H
 #define TEXASHOLDEMGAME_H
 
-#include <iostream> 
+#include <fstream>
+#include <iostream>
 #include <vector>
 #include <array>
 #include <map>
+#include <chrono>
 #include <string>
 #include <cmath>
 #include "contract_exception.h"
@@ -131,6 +133,11 @@ namespace game {
         std::array<int, 2> endHand();
         void applyActionOnPlayer(Player* p_player, Action p_action);
 
+        std::map<std::string, std::string> m_playerMethod;
+
+
+        int m_elapseTime = 0;
+
 
     public:
         TexasHoldemGame();
@@ -157,10 +164,14 @@ namespace game {
         void updateCurrentGameState();
         void doRoundUntilEnd();
         std::array<int, 2> doHand(bool p_verbose = true);
-        void doHands(bool p_verbose = false, bool p_progress = true, int p_hmHands = 10);
+
+        void doHands(bool p_verbose = false, bool p_progress = true, int p_hmHands = 10, std::string p_outputfilename = "TexasHoldemData.dat");
+
         std::string getCurrentStateAsString();
 
         std::string getWinsStatsAsString();
+
+        void writeWinStatsIntoFile(std::string p_filename = "TexasHoldemData.dat");
 
         float getSuccessfullWinRate(std::string p_playerName);
         float getSuccessfullLossRate(std::string p_playerName);
