@@ -1,0 +1,6 @@
+sep:,
+nb hands: 1000 elapse time: 12 [s]
+Player,method,win rate,expected win rate,successful win rate,successful loss rate,bluff detected rate,efficiency,n.rn-efficiency,gains,loss,
+base0,Base,0.418000,0.319000,0.956113,0.110132,0.270335,0.445527,-0.054473,0.284615,0.030769,
+mcts,MCTS_10,0.455000,0.424000,0.900943,0.397569,0.160440,0.486317,-0.013683,0.376923,0.015385,
+rn0,random,0.127000,0.257000,0.412451,0.620458,0.165354,0.399421,-0.100579,0.002564,0.617949,
