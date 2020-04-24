@@ -26,6 +26,7 @@ namespace game {
 			m_playerSuccessfulWins.insert({ p_players[i]->getName(), 0 });
 			m_playerSuccessfulLoss.insert({ p_players[i]->getName(), 0 });
 			m_playerBluffDetected.insert({ p_players[i]->getName(), 0 });
+			m_playerMethod.insert({ p_players[i]->getName(), p_players[i]->getMethod() });
 		}
 	}
 
@@ -200,10 +201,11 @@ namespace game {
 		return winners;
 	}
 
-	void TexasHoldemGame::doHands(bool p_verbose, bool p_progress, int p_hmHands) {
+	void TexasHoldemGame::doHands(bool p_verbose, bool p_progress, int p_hmHands, string p_outputfilename) {
 
 		int last_progress = -1;
 		ProgressBar pb = ProgressBar(p_hmHands, "Do hands");
+		auto startTime = chrono::steady_clock::now();
 
 		for (int i = 0; i < p_hmHands; i++)
 		{
@@ -211,13 +213,20 @@ namespace game {
 			doHand(p_verbose);
 
 			if (p_progress) {
-				int progress = (int)(100.0f * ((i + 1.0f) / p_hmHands));
-				//if (progress != last_progress && progress % 10 == 0) cout << to_string(progress) << "%" << endl;
-				last_progress = progress;
 				pb++;
+			}
+
+			if (i % 10 == 0) {
+				auto currentTime = chrono::steady_clock::now();
+				m_elapseTime = chrono::duration_cast<chrono::seconds>(currentTime - startTime).count();
+				writeWinStatsIntoFile(p_outputfilename);
 			}
 			
 		}
+
+		auto endTime = chrono::steady_clock::now();
+		m_elapseTime = chrono::duration_cast<chrono::seconds>(endTime - startTime).count();
+		writeWinStatsIntoFile(p_outputfilename);
 
 		if (p_verbose) cout << getWinsStatsAsString();
 	}
@@ -1075,6 +1084,43 @@ namespace game {
 		return out;
 	}
 
+	void TexasHoldemGame::writeWinStatsIntoFile(std::string p_filename)
+	{
+		ofstream outfile;
+		outfile.open("Data/"+p_filename);
+
+		string sep = ",";
+
+		outfile << "sep:"+sep << endl;
+		outfile << "nb hands: " + to_string(m_handCounter) + " elapse time: " + to_string(m_elapseTime) + " [s]" << endl;
+		outfile << "Player" + sep + "method" + sep + "win rate" + sep + "expected win rate" + sep 
+			+ "successful win rate" + sep + "successful loss rate" + sep + "bluff detected rate" 
+			+ sep + "efficiency" + sep + "n.rn-efficiency" + sep + "gains" + sep + "loss" + sep << endl;
+
+		map<string, int>::iterator it = m_playerWins.begin();
+		while (it != m_playerWins.end())
+		{
+			float win_rate = ((float)it->second) / m_handCounter;
+			float expected_win_rate = ((float)m_playerExpectedWins[it->first]) / m_handCounter;
+
+			outfile << it->first + sep 
+				+ m_playerMethod[it->first] + sep
+				+ to_string(win_rate) + sep
+				+ to_string(expected_win_rate) + sep
+				+ to_string(((float)m_playerSuccessfulWins[it->first]) / ((float)m_playerExpectedWins[it->first])) + sep
+				+ to_string(((float)m_playerSuccessfulLoss[it->first]) / (m_handCounter - m_playerExpectedWins[it->first])) + sep
+				+ to_string(((float)m_playerBluffDetected[it->first]) / ((float)it->second)) + sep
+				+ to_string(getEfficiency(it->first)) + sep
+				+ to_string(getNonRandomEfficiency(it->first)) + sep
+				+ to_string(((float)m_playerGains[it->first]) / m_totalGains) + sep
+				+ to_string(((float)m_playerLoss[it->first]) / m_totalGains) + sep
+				<< endl;
+
+			it++;
+		}
+		outfile.close();
+	}
+
 	float TexasHoldemGame::getSuccessfullWinRate(std::string p_playerName)
 	{
 		float sw_rate = 0.0f;
@@ -1114,7 +1160,6 @@ namespace game {
 	{
 		return getEfficiency(p_playerName) - 0.5f;
 	}
-
 
 	string TexasHoldemGame::getCurrentStateAsString() {
 		string out = "\n";
