@@ -148,7 +148,7 @@ int main(void) {
 
 	//main_test_cuda();
 
-	vector<int> hmSimulationsVector = {5, 10, 25, 100, 1000};
+	vector<int> hmSimulationsVector = {10, 100, 1000, 10000, 100000};
 	for each (int hmSimulations in hmSimulationsVector)
 	{
 		Player player_rn0 = Player("rn0", "random");
