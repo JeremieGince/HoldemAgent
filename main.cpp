@@ -173,6 +173,8 @@ int main(void) {
 
 		auto startTime = chrono::steady_clock::now();
 
+		cout << endl << "hm simulations: " + to_string(hmSimulations) << endl << endl;
+
 		game.start();
 
 		game.doHands(false, true, 1000, "TexasHoldemSimulations_"+to_string(hmSimulations)+".dat");
