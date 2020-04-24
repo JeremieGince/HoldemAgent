@@ -7,7 +7,7 @@ using namespace std;
 namespace game {
 
 
-	MCTS::MCTS(std::string p_name) : Player(p_name, "MCTS")
+	MCTS::MCTS(std::string p_name, int p_hmSimulations) : Player(p_name, "MCTS_"+to_string(p_hmSimulations)), m_hmSimulations(p_hmSimulations)
 	{
 	}
 
@@ -18,7 +18,7 @@ namespace game {
 			relocate_root_in_tree(p_gameState);
 		}
 		create_game_from_state(p_gameState);
-		while (m_tree->root->nb_visits < 10000) {
+		while (m_tree->root->nb_visits < m_hmSimulations) {
 			set_game(p_gameState);
 			simulation_game.doHand(false);
 			Node* last_Node = manage_leafs(&p_gameState);
@@ -41,7 +41,6 @@ namespace game {
 
 
 		}
-		//iter_of_optimal_choice = -1;
 		last_decision_node = m_tree->root->children[iter_of_optimal_choice];
 		return *(last_decision_node->decision);
 	}
@@ -171,7 +170,7 @@ namespace game {
 		vector<Player*> simulated_players;
 		for (int i = 0; i < real_players.size(); i++)
 		{
-			if (real_players[i]->getMethod() == "MCTS")
+			if (real_players[i]->getMethod() == m_method)
 			{
 				MCTS_dummy_player* slave_player = new MCTS_dummy_player(m_tree, real_players[i]->getName());
 				simulated_players.push_back(slave_player);
