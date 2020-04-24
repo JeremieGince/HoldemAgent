@@ -2,7 +2,8 @@
 
 #include<vector>
 #include<stack>
-# include "Card.h"
+#include <time.h>
+#include "Card.h"
 
 namespace game{
 

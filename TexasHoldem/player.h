@@ -9,6 +9,7 @@
 #include <iostream> 
 #include <vector>
 #include <string>
+#include <time.h>
 #include "contract_exception.h"
 #include "Card.h"
 

@@ -127,7 +127,7 @@ namespace game {
         std::map<std::string, int> m_playerSuccessfulLoss;
         void incrementPlayerSuccessfulLoss(std::string p_playerName);
 
-        std::map<std::string, int> m_playerBluffDetected;
+        std::map<std::string, int> m_playerBluff;
         void incrementPlayerBluffDetected(std::string p_playerName);
 
         std::array<int, 2> endHand();
@@ -165,7 +165,7 @@ namespace game {
         void doRoundUntilEnd();
         std::array<int, 2> doHand(bool p_verbose = true);
 
-        void doHands(bool p_verbose = false, bool p_progress = true, int p_hmHands = 10, std::string p_outputfilename = "TexasHoldemData.dat");
+        void doHands(bool p_verbose = false, bool p_progress = true, int p_hmHands = 10, std::string p_outputfilename = "TH");
 
         std::string getCurrentStateAsString();
 
@@ -175,9 +175,10 @@ namespace game {
 
         float getSuccessfullWinRate(std::string p_playerName);
         float getSuccessfullLossRate(std::string p_playerName);
-        float getBluffDetectedRate(std::string p_playerName);
+        float getBluffRate(std::string p_playerName);
         float getEfficiency(std::string p_playerName);
-        float getNonRandomEfficiency(std::string p_playerName);
+        float getSkillAverage(std::string p_playerName);
+        float getSkillBalance(std::string p_playerName);
 
         // checker of hands
         static bool checkRoyalFlush(std::vector<Card> p_hand);

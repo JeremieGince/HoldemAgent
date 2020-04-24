@@ -33,6 +33,7 @@ namespace game {
 			}
 		}
 
+		srand(time(0));
 		std::random_shuffle(cards.begin(), cards.end());
 
 		for(int i = 0; i < cards.size(); i++)
@@ -85,6 +86,7 @@ namespace game {
 			cards.push_back(card);
 		}
 
+		srand(time(0));
 		std::random_shuffle(cards.begin(), cards.end());
 
 		for (int i = 0; i < cards.size(); i++)

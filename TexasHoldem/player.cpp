@@ -22,6 +22,8 @@ namespace game {
 
 	Action Player::getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions) {
 		Action action;
+
+		srand(time(0));
 		if (p_possibleActions.size() > 0) {
 			action.actionType = p_possibleActions[rand() % p_possibleActions.size()];
 		}
