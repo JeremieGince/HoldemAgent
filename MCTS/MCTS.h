@@ -27,6 +27,8 @@ namespace game {
         TexasHoldemGame simulation_game;
         DecisionNode* last_decision_node = new DecisionNode();
 
+        int m_hmSimulations;
+
 
         void backpropagation_of_probabilities(Node* final_Node);
         void create_game_from_state(GameState p_gameState);
@@ -39,7 +41,7 @@ namespace game {
         
 
     public:
-        MCTS(std::string p_name);
+        MCTS(std::string p_name, int p_hmSimulations = 100000);
 
         virtual Action getAction(GameState p_gameState, std::vector<ActionType> p_possibleActions);
         std::string getNodeAsSTring(Node* p_node);
