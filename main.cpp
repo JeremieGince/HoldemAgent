@@ -104,20 +104,20 @@ int main(void) {
 	vector<int> hmSimulationsVector = { 100000 };
 	for each (int hmSimulations in hmSimulationsVector)
 	{
-		//Player player_rn0 = Player("rn0", "random");
+		Player player_rn0 = Player("rn0", "random");
 		//Player player_rn1 = Player("rn1", "random");
 		//Player player_rn2 = Player("rn2", "random");
 		//Player player_rn3 = Player("rn3", "random");
-		BaseAgent player_base0 = BaseAgent("base0");
+		//BaseAgent player_base0 = BaseAgent("base0");
 		//BaseAgent player_base1 = BaseAgent("base1");
 		//BaseAgent player_base2 = BaseAgent("base2");
 		//BaseAgent player_base3 = BaseAgent("base3");
 		MCTS mcts_agent = MCTS("mcts", hmSimulations);
 
 		//vector<Player*> players{ &player_rn0, &player_rn1, &player_rn2, &player_rn3, &player_base0, &player_base1, &player_base2, &player_base3 };
-		vector<Player*> players{&mcts_agent, &player_base0 };
+		//vector<Player*> players{&mcts_agent, &player_base0 };
 		//vector<Player*> players{ &mcts_agent, &player_base0, &player_rn0 };
-		//vector<Player*> players{ &mcts_agent, &player_rn0 };
+		vector<Player*> players{ &mcts_agent, &player_rn0 };
 		//vector<Player*> players{ &player_base0, &player_base1 };
 		//vector<Player*> players{ &player_base0, &player_base1, &player_base2 };
 
@@ -130,7 +130,7 @@ int main(void) {
 
 		game.start();
 
-		game.doHands(false, true,  1000, "TH-mcts-base");
+		game.doHands(false, true,  1000, "TH-mcts-rn");
 
 		std::cout << game.getWinsStatsAsString() << endl;
 
