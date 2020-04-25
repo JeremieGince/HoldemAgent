@@ -9,6 +9,9 @@
 
 #include <fstream>
 #include <iostream>
+#include <stdio.h>
+#include <io.h>
+#include <direct.h>
 #include <vector>
 #include <array>
 #include <map>

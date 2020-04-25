@@ -1,2 +1,0 @@
-win_rate,expected_win_rate,successful_win_rate,successful_loss_rate,bluff_rate,skill_average,skill balance,efficiency,gains,loss,nb_hands,elapse_time [s]
-0.120000,0.470000,0.255319,0.924528,0.000000,0.471939,0.346648,0.163597,0.000000,0.580645,100,45

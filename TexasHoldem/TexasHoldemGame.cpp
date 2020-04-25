@@ -1082,6 +1082,12 @@ namespace game {
 	void TexasHoldemGame::writeWinStatsIntoFile(std::string p_filename)
 	{
 
+		//string current_path = get_current_dir();
+
+		string data_path; // = current_path + "/Data";
+
+		//if (mkdir(data_path.c_str()) != 0) {}
+
 		map<string, int>::iterator it = m_playerWins.begin();
 		while (it != m_playerWins.end())
 		{
