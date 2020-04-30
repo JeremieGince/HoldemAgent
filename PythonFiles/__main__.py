@@ -32,31 +32,31 @@ def get_global_data(data):
 
     data = deepcopy(data).fillna(0)
 
-    print("nb_hands.sum: ", data["nb_hands"].sum())
-    print("data.shape: ", data.shape)
-    print(" data['successful_loss']: ", data["successful_loss_rate"] * (data["nb_hands"] - data["expected_win_rate"] * data["nb_hands"]))
+    # print("nb_hands.sum: ", data["nb_hands"].sum())
+    # print("data.shape: ", data.shape)
+    # print(" data['successful_loss']: ", data["successful_loss_rate"] * (data["nb_hands"] - data["expected_win_rate"] * data["nb_hands"]))
 
     expected_win = data["expected_win_rate"] * data["nb_hands"]
     successful_win = data["successful_win_rate"] * expected_win
     successful_loss = data["successful_loss_rate"] * (data["nb_hands"] - expected_win)
     bluff = data["bluff_rate"] * (data["nb_hands"] - expected_win)
 
-    print("expected_win: ", expected_win.sum(), " successful_win: ", successful_win.sum(),
-          " successful_loss: ", successful_loss.sum(),
-          " bluff: ", bluff.sum())
+    # print("expected_win: ", expected_win.sum(), " successful_win: ", successful_win.sum(),
+    #       " successful_loss: ", successful_loss.sum(),
+    #       " bluff: ", bluff.sum())
 
     expected_win_rate = expected_win.sum() / data["nb_hands"].sum()
     successful_win_rate = successful_win.sum() / expected_win.sum()
     successful_loss_rate = successful_loss.sum() / (data["nb_hands"].sum() - expected_win.sum())
     bluff_rate = bluff.sum() / (data["nb_hands"].sum() - expected_win.sum())
 
-    print("expected_win_rate: ", expected_win_rate, " successful_win_rate: ", successful_win_rate,
-          " successful_loss_rate: ", successful_loss_rate, " bluff_rate: ", bluff_rate)
+    # print("expected_win_rate: ", expected_win_rate, " successful_win_rate: ", successful_win_rate,
+    #       " successful_loss_rate: ", successful_loss_rate, " bluff_rate: ", bluff_rate)
 
     skill_average = (2/5) * successful_win_rate + (2/5) * successful_loss_rate + (1/5) * bluff_rate
-    skill_balance = (4/5) * np.abs(successful_win_rate - successful_loss_rate) + \
-                    (1 / 10) * np.abs(bluff_rate - successful_loss_rate) + \
-                    (1 / 10) * np.abs(successful_win_rate - bluff_rate)
+    skill_balance = 1-((4/5) * np.abs(successful_win_rate - successful_loss_rate) + \
+                       (1 / 10) * np.abs(bluff_rate - successful_loss_rate) + \
+                       (1 / 10) * np.abs(successful_win_rate - bluff_rate))
 
     new_data = pd.DataFrame(columns=data.columns.to_list())
     new_data = new_data.append({
@@ -103,9 +103,9 @@ def plot_data(method_data: dict):
 
 
 if __name__ == '__main__':
-    # base_rn_data = load_data("base-rn")
+    base_rn_data = load_data("base-rn")
     mcts_base_data = load_data("mcts-base")
-    # mcts_rn_data = load_data("mcts-rn")
-    # plot_data(base_rn_data)
-    # plot_data(mcts_base_data)
-    # plot_data(mcts_rn_data)
+    mcts_rn_data = load_data("mcts-rn")
+    plot_data(base_rn_data)
+    plot_data(mcts_base_data)
+    plot_data(mcts_rn_data)
