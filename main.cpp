@@ -93,10 +93,26 @@ void checkHands() {
 		cout << "checkPair Failed \n";
 	}
 	cout << endl;
+
+
+	cout <<
+		"Royal Flush offset: " + to_string(ROYALFLUSHoffset) << endl
+		<< "Straight Flush offset: " + to_string(STRAIGHTFLUSHoffset) << endl
+		<< "Four of a kind offset: " + to_string(FOUROFAKINDoffset) << endl
+		<< "Full house ofsset: " + to_string(FULLHOUSEoffset) << endl
+		<< "Flush offset: " + to_string(FLUSHoffset) << endl
+		<< "Straight offset: " + to_string(STRAIGHToffset) << endl
+		<< "Three of a kind offset: " + to_string(THREEOFAKINDoffset) << endl
+		<< "Two pair offset: " + to_string(TWOPAIRoffset) << endl 
+		<< "Pair offset: " + to_string(PAIRoffset) << endl
+		<< "Hight Card offset: " + to_string(HIGHCARDoffset) << endl
+		<< endl;
+
 }
 
 int main(void) {
 
+	//checkHands();
 	//main_test_cuda();
 
 	//vector<int> hmSimulationsVector = { 10, 100, 1000, 10000, 100000};
@@ -108,7 +124,7 @@ int main(void) {
 		//Player player_rn1 = Player("rn1", "random");
 		//Player player_rn2 = Player("rn2", "random");
 		//Player player_rn3 = Player("rn3", "random");
-		//BaseAgent player_base0 = BaseAgent("base0");
+		BaseAgent player_base0 = BaseAgent("base0");
 		//BaseAgent player_base1 = BaseAgent("base1");
 		//BaseAgent player_base2 = BaseAgent("base2");
 		//BaseAgent player_base3 = BaseAgent("base3");
@@ -117,8 +133,8 @@ int main(void) {
 		//vector<Player*> players{ &player_rn0, &player_rn1, &player_rn2, &player_rn3, &player_base0, &player_base1, &player_base2, &player_base3 };
 		//vector<Player*> players{&mcts_agent, &player_base0 };
 		//vector<Player*> players{ &mcts_agent, &player_base0, &player_rn0 };
-		vector<Player*> players{ &mcts_agent, &player_rn0 };
-		//vector<Player*> players{ &player_base0, &player_base1 };
+		//vector<Player*> players{ &mcts_agent, &player_rn0 };
+		vector<Player*> players{ &player_base0, &player_rn0 };
 		//vector<Player*> players{ &player_base0, &player_base1, &player_base2 };
 
 
@@ -130,7 +146,7 @@ int main(void) {
 
 		game.start();
 
-		game.doHands(false, true,  1000, "TH-mcts-rn");
+		game.doHands(false, true,  1000, "TH-base-rn");
 
 		std::cout << game.getWinsStatsAsString() << endl;
 
