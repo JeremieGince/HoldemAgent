@@ -24,7 +24,7 @@ def load_data(TH_game_name: str):
             data = pd.read_csv(data_directory + filename)
             method_data[method_name] = get_global_data(data)
 
-            print(method_name, method_data[method_name][["skill_average", "skill balance", "efficiency", ]], '\n', sep="\n")
+            # print(method_name, method_data[method_name][["skill_average", "skill balance", "efficiency", ]], '\n', sep="\n")
     return method_data
 
 
@@ -60,27 +60,27 @@ def get_global_data(data):
 
     new_data = pd.DataFrame(columns=data.columns.to_list())
     new_data = new_data.append({
-        "win_rate": data["win_rate"].mean(),
-        "expected_win_rate": expected_win_rate,
-        "successful_win_rate": successful_win_rate,
-        "successful_loss_rate": successful_loss_rate,
-        "bluff_rate": bluff_rate,
-        "skill_average": skill_average,
-        "skill balance": skill_balance,
-        "efficiency": skill_average * skill_balance,
-        "gains": data["gains"].sum(),
-        "loss": data["loss"].sum(),
-        "nb_hands": data["nb_hands"].sum(),
-        "elapse_time [s]": data["elapse_time [s]"].sum()
+        "Taux de réussite": data["win_rate"].mean(),
+        "Taux de mains gagnantes": expected_win_rate,
+        "Taux de victoires réussites": successful_win_rate,
+        "Taux de défaites réussites": successful_loss_rate,
+        "Taux de bluff": bluff_rate,
+        "Performance moyenne": skill_average,
+        "Équilibre des capacités": skill_balance,
+        "Efficacité": skill_average * skill_balance,
+        "Gains": data["gains"].sum(),
+        "Pertes": data["loss"].sum(),
+        "Nombre de mains": data["nb_hands"].sum(),
+        "Durée [s]": data["elapse_time [s]"].sum()
     }, ignore_index=True).iloc[0]
 
     return new_data
 
 
 def plot_data(method_data: dict):
-    other_stats = ["win_rate", "expected_win_rate", ]
-    base_stats = ["successful_win_rate", "successful_loss_rate", "bluff_rate", ]
-    power_stats = ["skill_average", "skill balance", "efficiency", ]
+    other_stats = ["Taux de réussite", "Taux de mains gagnantes", ]
+    base_stats = ["Taux de victoires réussites", "Taux de défaites réussites", "Taux de bluff", ]
+    power_stats = ["Performance moyenne", "Équilibre des capacités", "Efficacité", ]
 
     stats: dict = {
         "other stats": other_stats,
@@ -89,7 +89,7 @@ def plot_data(method_data: dict):
     }
 
     for sts_name, sts in stats.items():
-        fig = plt.figure(figsize=(13, 5))
+        fig = plt.figure(figsize=(16, 5))
         for i, (mth, data) in enumerate(method_data.items()):
             print(mth, data[sts], '\n', sep='\n')
             data[sts].sort_index().plot.barh(alpha=1.0, label=mth,
